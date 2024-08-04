@@ -115,7 +115,7 @@ class Utility():
             # check
             if os.path.exists(filePath):
                 # file info
-                fileDir, fileName, fileFormat = CoreUtility.CheckFileFormat(
+                fileDir, fileName, fileFormat = Utility.CheckFileFormat(
                     filePath)
 
                 # read a file
@@ -308,7 +308,7 @@ class Utility():
             # write
             with open(csvFile, 'w') as f:
                 writer = csv.DictWriter(
-                    f, fieldnames=CoreUtility.json_csv_columns)
+                    f, fieldnames=Utility.json_csv_columns)
                 writer.writeheader()
                 writer.writerows(csv_list)
                 # log

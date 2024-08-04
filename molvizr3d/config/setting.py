@@ -2,9 +2,9 @@
 # --------------
 
 # package name
-packageName = '3D Molecule Visualizer'
+packageName = 'Molecular Visualizer in 3D'
 # package short name
-packageShortName = '3DMolVizr'
+packageShortName = 'MolVizr3D'
 # package version
 __version__ = '1.0.0'
 # package description

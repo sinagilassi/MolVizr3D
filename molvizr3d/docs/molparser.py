@@ -6,7 +6,7 @@ import re
 import numpy as np
 import copy
 # internals
-from .config import OBS_POSITIONS
+from ..config import OBS_POSITIONS
 from .structure import Structure
 from .element import Element
 from .utility import Utility
@@ -70,9 +70,34 @@ class MolParser():
         '''
         parse sdf file
 
-        args:
-            sdfSource: file read return
-            sdfVersion: the compatible version 
+        Parameters
+        ----------
+        sdfSource : str
+            sdf file content
+
+        sdfVersion : str
+            sdf file version (default V2000)
+
+        Returns
+        -------
+        res : dict
+            mol: mol object
+                header_block: header block
+                counts_line: counts line
+                atom_numbers: atom number
+                mat_cid: cid number
+                mat_name: IUPAC name
+                mat_formula: formula
+                mat_mass: molecular mass
+                atom_names: atom list
+                atom_elements: atom list
+                bond_numbers: bond number
+                atom_block: atoms
+                bond_block: bond list
+                xyz_list: xyz list
+                xyz_center_list: xyz center list
+                compound_properties: compound properties
+
         '''
         # decode binary
         # if binary file

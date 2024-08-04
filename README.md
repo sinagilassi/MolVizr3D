@@ -1,6 +1,6 @@
-# 3DMolVizr: 3D Molecule Visualizer
+# MolVizr3D: Molecular Visualizer in 3D
 
-3DMolVizr is a Python package designed to provide an intuitive and powerful solution for visualizing molecular structures in three dimensions. This package supports various molecule formats such as SDF, MOL, and more, allowing users to easily load and render complex molecular structures with high-quality 3D graphics.
+MolVizr3D is a Python package designed to provide an intuitive and powerful solution for visualizing molecular structures in three dimensions. This package supports various molecule formats such as SDF, MOL, and more, allowing users to easily load and render complex molecular structures with high-quality 3D graphics.
 
 **Key Features:**
 
@@ -9,12 +9,13 @@
 * `Interactive Visualization:` Rotate, zoom, and explore molecules interactively to better understand their geometry and properties.
 * `Customization:` Customize visual aspects such as colors, styles, and labels to suit your specific needs.
 * `Integration:` Seamlessly integrates with other computational chemistry tools and workflows.
+
 ## Installation
 
-Install 3DMolVizr with pip
+Install MolVizr3D with pip
 
 ```python
-  pip install 3DMolVizr
+  pip install MolVizr3D
 ```
 
 

@@ -127,7 +127,7 @@ class Observer():
     @staticmethod
     def GeneratorCircleObserver(r, tetaNo, phiNo, limits=[]):
         '''
-        generate circle xyz points in cartesian coordinate
+        Generate circle xyz points in cartesian coordinate
         '''
         # rad [rad]
         tetaRes = Structure.PeriodGenerator(n=tetaNo)

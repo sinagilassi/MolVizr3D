@@ -1,6 +1,7 @@
 # import packages/modules
 import os
 import json
+import numpy as np
 import molvizr3d as mv3d
 
 # check version
@@ -20,6 +21,13 @@ mol = mv3d.td(sdf_file)
 # atom_block = mol['atom_block']
 # bond block
 # bond_block = mol['bond_block']
+# xyz list
+atom_xyz = mol.atom_xyz
+# save
+# Save to a text file (comma-separated by default)
+# np.savetxt(os.path.join(os.getcwd() + '/test/' + 'xyz_list.txt'), atom_xyz)
+# np.save(os.path.join(os.getcwd() + '/test/' + 'xyz_list.txt'), atom_xyz)
+
 # save
 # Save as JSON
 # with open('atom_block.json', 'w') as f:
@@ -27,5 +35,5 @@ mol = mv3d.td(sdf_file)
 
 # with open('bond_block.json', 'w') as f:
 #     json.dump(bond_block, f)
-print(type(mol))
+# print(type(mol))
 mol.view3d()

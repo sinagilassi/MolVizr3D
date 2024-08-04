@@ -144,7 +144,6 @@ class Compound(Vizr3D):
         self._atom_bond_numbers = value
 
     # *** observer prop
-
     @property
     def limits(self):
         return self._limits

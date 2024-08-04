@@ -192,9 +192,9 @@ class MolParser():
 
             # atom info
             atom = {
-                'id': i,
+                'id': i+1,
                 'symbol': _name,
-                'index': i,
+                'index': i+1,
                 'x': _x,
                 'y': _y,
                 'z': _z,

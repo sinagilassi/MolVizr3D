@@ -7,6 +7,7 @@ from .config import packageShortName
 from .config import __version__
 from .config import __description__
 from .docs import MolParser
+from .docs import Compound
 
 
 def main():
@@ -32,8 +33,10 @@ def td(f):
     if os.path.exists(f):
         # parse file
         MolParserC = MolParser(f)
-        mol_obj = MolParserC.read_file()
-        return mol_obj
+        compound_info = MolParserC.read_file()
+        # compound
+        compound = Compound(compound_info)
+        return compound
     else:
         raise Exception("file path is not valid.")
 

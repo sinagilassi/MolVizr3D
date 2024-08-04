@@ -2,8 +2,6 @@
 # -----------------------------
 
 # import libs
-import os
-import math
 import numpy as np
 import matplotlib.pyplot as plt
 # internal
@@ -12,7 +10,7 @@ from .observer import Observer
 
 class Vizr3D():
     '''
-    visualize chemical structure
+    3D Visualizer of a compound 
 
     hint:
         xyzList is selected for visualization
@@ -46,10 +44,17 @@ class Vizr3D():
 
     def StructureAnalyzer(self):
         '''
-        check geometry structure to determine 2D/3D 
+        Check geometry structure to determine 2D/3D  
 
-        args:
-            xyzList: point coordination 
+        Parameters
+        ----------
+        xyzList: list
+            point coordination
+
+        Returns
+        -------
+        structureType: str
+            2D or 3D
         '''
         try:
             # array
@@ -58,8 +63,6 @@ class Vizr3D():
             X = xyzList[:, 0]
             Y = xyzList[:, 1]
             Z = xyzList[:, 2]
-
-            XYZLen = len(X)
 
             # check plane structure (2D, 3D)
             X0 = np.abs(X).sum()
@@ -96,14 +99,22 @@ class Vizr3D():
 
             return structureType, perpendicularAxis, perpendicularVector, XYZ0
         except Exception as e:
-            raise
+            raise Exception(e)
 
     def set_color(self, atom_symbol):
         '''
-        set color for compound representation
+        Set a color for each compound
+        taken from https://en.wikipedia.org/wiki/CPK_coloring
 
-        Ref: https://en.wikipedia.org/wiki/CPK_coloring
+        Parameters
+        ----------
+        atom_symbol: str
+            atom symbol
 
+        Returns
+        -------
+        color: str
+            atom color
         '''
         colors = {
             "H": 'ffffff',
@@ -147,7 +158,19 @@ class Vizr3D():
 
     def set_size(self, symbol, _s=4):
         '''
-        set size of atom spherical shape
+        Set atom size (spherical shape)
+
+        Parameters
+        ----------
+        symbol: str
+            atom symbol
+        _s: int
+            size
+
+        Returns
+        -------
+        size: int
+            size
         '''
         _sx = 100
         _sy = 200
@@ -196,7 +219,7 @@ class Vizr3D():
 
     def create_3dframe(self):
         '''
-        create 3d frame dimension
+        Create 3d frame dimension
         '''
         # max length
         # x
@@ -219,38 +242,29 @@ class Vizr3D():
         # res
         return xyzLenMax, xyzLenMin, xyzR, xLen, yLen, zLen
 
-    def create_bond_line(self, xyz1, xyz2, bond_type, xyzL=[1, 1, 1], xyzR=0.15, perpendicularAxis=[]):
+    def create_bond_line(self, xyz1, xyz2, bond_type, xyzL=[1, 1, 1], xyzR=0.15):
         '''
-        create bond line (single, double, tipple)
+        Create bond line (single, double, tipple)
 
-        args:
-            xyz1: (x,y,z) point 1
-            xyz2: (x,y,z) point 2
-            bond_type: bond type (1,2,3)
+        Parameters
+        ----------
+        xyz1: list
+            (x,y,z) point 1
+        xyz2: list
+            (x,y,z) point 2
+        bond_type: int
+            bond type (1,2,3)
+        xyzL: list
+            (x,y,z) length
+        xyzR: int
+            (x,y,z) radius
+
+        Returns
+        -------
+        bondLines: list
+            list of bond lines
         '''
-
         bondLines = []
-
-        # check bond_type = 2,3,
-        # if bond_type == 2 or bond_type == 3:
-        #     xL, yL, zL = xyzR*xyzL
-        #     # check geometry (perpendicular plane)
-        #     # check
-        #     if len(perpendicularAxis) > 0:
-        #         # *** fix/random
-        #         # random.choice(perpendicularAxis)
-        #         randomAxis = perpendicularAxis[0]
-        #         if randomAxis == 'X':
-        #             yL = 0
-        #             zL = 0
-        #         elif randomAxis == 'Y':
-        #             xL = 0
-        #             zL = 0
-        #         elif randomAxis == 'Z':
-        #             xL = 0
-        #             yL = 0
-        #     else:
-        #         raise Exception('perpendicularAxis error.')
 
         xL, yL, zL = xyzR*np.array(xyzL)
 
@@ -290,11 +304,20 @@ class Vizr3D():
 
     def line_property(self, xyz1, xyz2):
         '''
-        check line property
-            which plane are engaged
+        Check line property which plane are engaged
+        when res contains two True, it means the False coordination contains all elements. 
 
-        hint:
-            when res contains two True, it means the False coordination contains all elements. 
+        Parameters
+        ----------
+        xyz1: list
+            (x,y,z) point 1
+        xyz2: list
+            (x,y,z) point 2
+
+        Returns
+        -------
+        res: bool
+            res
         '''
         try:
             # mean value
@@ -346,16 +369,28 @@ class Vizr3D():
 
     def view3d(self, elev=None, azim=None, figSize='default', obsOption=[False, 0]):
         '''
-        draw compound in the cartesian coordinate
+        Draw a compound in the cartesian coordinate
+        atomElements atom symbol
+        atomBonds atom bonds (bond blocks)
+        xyzList atom position in the cartesian coordinate
+        figSize=(10, 10) plt 3d setting
+        obsOption=[False, 0] display center point [0,0,0]
 
-        args:
-            atomElements: atom symbol
-            atomBonds: atom bonds (bond blocks)
-            xyzList: atom position in the cartesian coordinate
-            elev=None: plt 3d setting
-            azim=None: plt 3d setting
-            figSize=(10, 10): plt 3d setting
-            obsOption=[False, 0]: display center point [0,0,0]
+        Parameters
+        ----------
+        elev: int
+            elevation of the view angle (default: 30)
+        azim: int
+            azimuthal angle of the view angle (default: 30)
+        figSize: tuple
+            figure size
+        obsOption: list
+            display center point [False,0]
+
+        Returns
+        -------
+        fig: figure
+            figure
         '''
         # 3d plot
         if figSize == 'default':
@@ -363,11 +398,7 @@ class Vizr3D():
         else:
             fig = plt.figure(figsize=figSize, facecolor='#000000')
 
-        # if figSize == 'default':
-        #     fig = plt.figure()
-        # else:
-        #     fig = plt.figure(figsize=figSize)
-
+        # projection
         ax = plt.axes(projection='3d')
         # axis display
         plt.axis('off')
@@ -381,10 +412,6 @@ class Vizr3D():
 
         # create 3d frame
         xyzLenMax, xyzLenMin, xyzR, xLen, yLen, zLen = self.create_3dframe()
-        # set
-        # scale
-        # ax.set_box_aspect((np.ptp([xyzLenMin, xyzLenMax]), np.ptp(
-        #     [xyzLenMin, xyzLenMax]), np.ptp([xyzLenMin, xyzLenMax])))
 
         # *** atom visualization
         for i in range(atomNo):
@@ -409,8 +436,6 @@ class Vizr3D():
             # draw atom 1
             ax.scatter3D(_atom1X, _atom1Y, _atom1Z,
                          label=_atomSymbol, s=_atomSize, c=_atomColor)
-            # ax.text(_atom1X, _atom1Y, _atom1Z, '%s' %
-            #         (atomMark), size=20, zorder=1, color='r')
 
         # reset
         i = 0
@@ -495,7 +520,7 @@ class Vizr3D():
 
     def view3dobs(self, elev=None, azim=None, figSize=(10, 10), obsOption=[True, 0]):
         '''
-        draw compound in the cartesian coordinate with observer
+        Draw a compound in the cartesian coordinate with observer
         '''
         # 3d plot
         fig = plt.figure(figsize=figSize)
@@ -577,7 +602,25 @@ class Vizr3D():
 
     def create_line(self, xyzList1, xyzList2, t=1):
         '''
-        create a line equation and its parallel lines
+        Create a line equation and its parallel lines
+
+        Parameters
+        ----------
+        xyzList1 : list
+            [x1,y1,z1]
+        xyzList2 : list
+            [x2,y2,z2]
+        t : float
+            ratio between xyzList1 and xyzList2
+
+        Returns
+        -------
+        r : list
+            [[x1,y1,z1], [x2,y2,z2]]
+        _l1 : list
+            [[x1,y1,z1], [x2,y2,z2]]
+        _l2 : list
+            [[x1,y1,z1], [x2,y2,z2]]
         '''
         try:
             r = np.array(xyzList2) - np.array(xyzList1)

@@ -8,7 +8,7 @@ import molvizr3d as mv3d
 # print(mv3d.__version__)
 
 # sdf file
-sdf_file_name_1 = 'test\Conformer3D_COMPOUND_CID_241.sdf'
+sdf_file_name_1 = 'test\Conformer3D_COMPOUND_CID_22044.sdf'
 sdf_file = os.path.join(os.getcwd(), sdf_file_name_1)
 # print(sdf_file)
 

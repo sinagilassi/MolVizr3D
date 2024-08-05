@@ -4,6 +4,7 @@
 # import libs
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib import cm
 import plotly as py
 import plotly.express as px
 import plotly.graph_objects as go
@@ -14,7 +15,7 @@ from .observer import Observer
 
 class Vizr3D():
     '''
-    3D Visualizer of a compound 
+    3D Visualizer of a compound
 
     hint:
         xyzList is selected for visualization
@@ -48,7 +49,7 @@ class Vizr3D():
 
     def StructureAnalyzer(self):
         '''
-        Check geometry structure to determine 2D/3D  
+        Check geometry structure to determine 2D/3D
 
         Parameters
         ----------
@@ -176,8 +177,8 @@ class Vizr3D():
         size: int
             size
         '''
-        _sx = 5
-        _sy = 10
+        _sx = 200
+        _sy = 300
 
         sizes = {
             "H": _s*_sx,
@@ -272,22 +273,34 @@ class Vizr3D():
 
         xL, yL, zL = xyzR*np.array(xyzL)
 
+        # Calculate center-to-center vector
+        center_vector = np.array(xyz2) - np.array(xyz1)
+
+        # Calculate center-to-center line
+        center_line = [[xyz1[0], xyz2[0]], [
+            xyz1[1], xyz2[1]], [xyz1[2], xyz2[2]]]
+
         if bond_type == 1:
-            # parallel line
-            # y increase
-            # line
-            _l1 = [[xyz1[0], xyz2[0]], [
-                xyz1[1], xyz2[1]], [xyz1[2], xyz2[2]]]
-            bondLines.append(_l1)
+            bondLines.append(center_line)
 
         elif bond_type == 2:
             # parallel line
             # y increase
-            # line
-            _l1 = [[xyz1[0]+xL, xyz2[0]+xL], [
-                xyz1[1]+yL, xyz2[1]+yL], [xyz1[2]+zL, xyz2[2]+zL]]
-            _l2 = [[xyz1[0]-xL, xyz2[0]-xL], [
-                xyz1[1]-yL, xyz2[1]-yL], [xyz1[2]-zL, xyz2[2]-zL]]
+            # center to center line
+            # Calculate perpendicular vector to center vector
+            perp_vector = np.array([center_vector[1], - center_vector[0], 0])
+            perp_vector /= np.linalg.norm(perp_vector)
+
+            # Calculate offset vectors
+            offset_vector1 = 0.15 * perp_vector
+            offset_vector2 = -0.15 * perp_vector
+
+            # Calculate parallel lines
+            _l1 = [[xyz1[0]+offset_vector1[0], xyz2[0]+offset_vector1[0]], [
+                xyz1[1]+offset_vector1[1], xyz2[1]+offset_vector1[1]], [xyz1[2]+offset_vector1[2], xyz2[2]+offset_vector1[2]]]
+            _l2 = [[xyz1[0]+offset_vector2[0], xyz2[0]+offset_vector2[0]], [
+                xyz1[1]+offset_vector2[1], xyz2[1]+offset_vector2[1]], [xyz1[2]+offset_vector2[2], xyz2[2]+offset_vector2[2]]]
+
             bondLines.append(_l1)
             bondLines.append(_l2)
 
@@ -295,11 +308,23 @@ class Vizr3D():
             # parallel line
             # y increase
             # line
-            _l1 = [[xyz1[0]+xL, xyz2[0]+xL], [
-                xyz1[1]+yL, xyz2[1]+yL], [xyz1[2]+zL, xyz2[2]+zL]]
-            _l2 = [[xyz1[0], xyz2[0]], [xyz1[1], xyz2[1]], [xyz1[2], xyz2[2]]]
-            _l3 = [[xyz1[0]-xL, xyz2[0]-xL], [
-                xyz1[1]-yL, xyz2[1]-yL], [xyz1[2]-zL, xyz2[2]-zL]]
+            # Calculate perpendicular vector to center vector
+            perp_vector = np.array([center_vector[1], -center_vector[0], 0])
+            perp_vector /= np.linalg.norm(perp_vector)
+
+            # Calculate offset vectors
+            offset_vector1 = 0.125 * perp_vector
+            offset_vector2 = -0.125 * perp_vector
+
+            # Calculate parallel lines
+            _l1 = [[xyz1[0]+offset_vector1[0], xyz2[0]+offset_vector1[0]], [
+                xyz1[1]+offset_vector1[1], xyz2[1]+offset_vector1[1]], [xyz1[2]+offset_vector1[2], xyz2[2]+offset_vector1[2]]]
+            _l2 = [[xyz1[0], xyz2[0]], [
+                xyz1[1], xyz2[1]], [xyz1[2], xyz2[2]]]
+
+            _l3 = [[xyz1[0]+offset_vector2[0], xyz2[0]+offset_vector2[0]], [
+                xyz1[1]+offset_vector2[1], xyz2[1]+offset_vector2[1]], [xyz1[2]+offset_vector2[2], xyz2[2]+offset_vector2[2]]]
+
             bondLines.append(_l1)
             bondLines.append(_l2)
             bondLines.append(_l3)
@@ -308,8 +333,8 @@ class Vizr3D():
 
     def line_property(self, xyz1, xyz2):
         '''
-        Check a line property with which plane is parallel 
-        when res contains two True, it means the False coordination contains all elements. 
+        Check a line property with which plane is parallel
+        when res contains two True, it means the False coordination contains all elements.
 
         Parameters
         ----------
@@ -368,36 +393,39 @@ class Vizr3D():
         except Exception as e:
             raise Exception(e)
 
-        def view3d_plt(self, elev=None, azim=None, figSize='default', obsOption=[False, 0]):
-            '''
-            Draw a compound in the cartesian coordinate
-            atomElements atom symbol
-            atomBonds atom bonds (bond blocks)
-            xyzList atom position in the cartesian coordinate
-            figSize=(10, 10) plt 3d setting
-            obsOption=[False, 0] display center point [0,0,0]
+    def view3d(self, elev=None, azim=None, figSize='default', obsOption=[False, 0]):
+        '''
+        Draw a compound in the cartesian coordinate
+        atomElements atom symbol
+        atomBonds atom bonds (bond blocks)
+        xyzList atom position in the cartesian coordinate
+        figSize=(10, 10) plt 3d setting
+        obsOption=[False, 0] display center point [0,0,0]
 
-            Parameters
-            ----------
-            elev: int
-                elevation of the view angle (default: 30)
-            azim: int
-                azimuthal angle of the view angle (default: 30)
-            figSize: tuple
-                figure size
-            obsOption: list
-                display center point [False,0]
+        Parameters
+        ----------
+        elev: int
+            elevation of the view angle (default: 30)
+        azim: int
+            azimuthal angle of the view angle (default: 30)
+        figSize: tuple
+            figure size
+        obsOption: list
+            display center point [False,0]
 
-            Returns
-            -------
-            fig: figure
-                figure
+        Returns
+        -------
+        fig: figure
+            figure
         '''
         # 3d plot
         if figSize == 'default':
             fig = plt.figure(facecolor='#000000')
         else:
             fig = plt.figure(figsize=figSize, facecolor='#000000')
+
+        # Create a colormap from white to black
+        cmap = plt.get_cmap('Greys')
 
         # projection
         ax = plt.axes(projection='3d')
@@ -434,9 +462,10 @@ class Vizr3D():
 
             # atom mark
             atomMark = str(_atomSymbol) + str(_atomId)
+
             # draw atom 1
             ax.scatter3D(_atom1X, _atom1Y, _atom1Z,
-                         label=_atomSymbol, s=_atomSize, c=_atomColor)
+                         label=_atomSymbol, s=_atomSize, color=_atomColor)
 
         # reset
         i = 0
@@ -468,8 +497,8 @@ class Vizr3D():
                     _bondType = int(_atom1BondList[j][3])
 
                     # set color
-                    lineColor = ['b', 'r', 'g']
-                    lineWidth = [1, 3, 5]
+                    lineColor = ['w', 'w', 'w']
+                    lineWidth = [4, 3, 2]
 
                     # xyz
                     _atom2X = self.xyzList[_atom2Id, 0]
@@ -519,7 +548,7 @@ class Vizr3D():
         ax.view_init(elev=elev, azim=azim)
         plt.show()
 
-    def view3d(self, elev=None, azim=None, figSize='default', obsOption=[False, 0]):
+    def view3d_plotly(self, elev=None, azim=None, figSize='default', obsOption=[False, 0]):
         '''
         Draw a compound in the cartesian coordinate
         atomElements atom symbol

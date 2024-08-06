@@ -331,6 +331,42 @@ class Vizr3D():
 
         return bondLines, bond_type
 
+    def line_mid_points(self, xyz1, xyz2):
+        '''
+        Divide a line in two equal parts 
+
+        Parameters
+        ----------
+        xyz1: list
+            (x,y,z) point 1
+        xyz2: list
+            (x,y,z) point 2
+
+        Returns
+        -------
+        midPoints: list
+            list of mid points
+        '''
+        # Calculate midpoints
+        midpoint_x = (xyz1[0] + xyz2[0]) / 2
+        midpoint_y = (xyz1[1] + xyz2[1]) / 2
+        midpoint_z = (xyz1[2] + xyz2[2]) / 2
+
+        # Divide center_line into two parts
+        part1 = [[xyz1[0], midpoint_x], [
+            xyz1[1], midpoint_y], [xyz1[2], midpoint_z]]
+        part2 = [[midpoint_x, xyz2[0]], [
+            midpoint_y, xyz2[1]], [midpoint_z, xyz2[2]]]
+
+        # Get four points
+        point1 = [xyz1[0], xyz1[1], xyz1[2]]
+        point2 = [midpoint_x, midpoint_y, midpoint_z]
+        point3 = [midpoint_x, midpoint_y, midpoint_z]
+        point4 = [xyz2[0], xyz2[1], xyz2[2]]
+
+        # res
+        return point1, point2, point3, point4, part1, part2
+
     def line_property(self, xyz1, xyz2):
         '''
         Check a line property with which plane is parallel
@@ -434,6 +470,9 @@ class Vizr3D():
         # color
         ax.set_facecolor('#000000')
 
+        # legend
+        legend_list = []
+
         # atom no
         atomNo = len(self.xyzList)
         # bond no
@@ -463,9 +502,17 @@ class Vizr3D():
             # atom mark
             atomMark = str(_atomSymbol) + str(_atomId)
 
-            # draw atom 1
-            ax.scatter3D(_atom1X, _atom1Y, _atom1Z,
-                         label=_atomSymbol, s=_atomSize, color=_atomColor)
+            # legend list
+            if _atomSymbol not in legend_list:
+                legend_list.append(_atomSymbol)
+
+                # draw atom 1
+                ax.scatter3D(_atom1X, _atom1Y, _atom1Z,
+                             label=_atomSymbol, s=_atomSize, color=_atomColor, cmap='hot', label=_atomSymbol)
+            else:
+                # draw atom 1
+                ax.scatter3D(_atom1X, _atom1Y, _atom1Z,
+                             label=_atomSymbol, s=_atomSize, color=_atomColor, cmap='hot')
 
         # reset
         i = 0
@@ -532,6 +579,9 @@ class Vizr3D():
             # obs show
             if obsOption[0]:
                 ax.scatter3D(obsOption[1], 0, 0, s=40)
+
+        # ax legends
+        ax.legend(legend_list)
 
         # axis setting
         ax.set_xlabel("$X$")

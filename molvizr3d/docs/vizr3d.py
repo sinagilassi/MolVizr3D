@@ -331,9 +331,117 @@ class Vizr3D():
 
         return bondLines, bond_type
 
+    def create_bond_line_V2(self, xyz1, xyz2, bond_type, xyzL=[1, 1, 1], xyzR=0.15):
+        '''
+        Create bond line (single, double, triple)
+
+        Parameters
+        ----------
+        xyz1: list
+            (x,y,z) point 1
+        xyz2: list
+            (x,y,z) point 2
+        bond_type: int
+            bond type (1,2,3)
+        xyzL: list
+            (x,y,z) length
+        xyzR: int
+            (x,y,z) radius
+
+        Returns
+        -------
+        bondLines: list
+            list of bond lines
+        '''
+        bondLines = []
+
+        xL, yL, zL = xyzR*np.array(xyzL)
+
+        # Calculate center-to-center vector
+        center_vector = np.array(xyz2) - np.array(xyz1)
+
+        # Calculate center-to-center line
+        center_line = [[xyz1[0], xyz2[0]], [
+            xyz1[1], xyz2[1]], [xyz1[2], xyz2[2]]]
+
+        # Calculate midpoint
+        midpoint = [(xyz1[0] + xyz2[0]) / 2, (xyz1[1] +
+                                              xyz2[1]) / 2, (xyz1[2] + xyz2[2]) / 2]
+
+        if bond_type == 1:
+            # Break single bond into two lines
+            bondLines.append(
+                [[xyz1[0], midpoint[0]], [xyz1[1], midpoint[1]], [xyz1[2], midpoint[2]]])
+            bondLines.append(
+                [[midpoint[0], xyz2[0]], [midpoint[1], xyz2[1]], [midpoint[2], xyz2[2]]])
+
+        elif bond_type == 2:
+            # parallel line
+            # y increase
+            # center to center line
+            # Calculate perpendicular vector to center vector
+            perp_vector = np.array([center_vector[1], - center_vector[0], 0])
+            perp_vector /= np.linalg.norm(perp_vector)
+
+            # Calculate offset vectors
+            offset_vector1 = 0.15 * perp_vector
+            offset_vector2 = -0.15 * perp_vector
+
+            # Calculate parallel lines
+            _l1 = [[xyz1[0]+offset_vector1[0], xyz2[0]+offset_vector1[0]], [
+                xyz1[1]+offset_vector1[1], xyz2[1]+offset_vector1[1]], [xyz1[2]+offset_vector1[2], xyz2[2]+offset_vector1[2]]]
+            _l2 = [[xyz1[0]+offset_vector2[0], xyz2[0]+offset_vector2[0]], [
+                xyz1[1]+offset_vector2[1], xyz2[1]+offset_vector2[1]], [xyz1[2]+offset_vector2[2], xyz2[2]+offset_vector2[2]]]
+
+            # Break each parallel line into two lines
+            bondLines.append([[xyz1[0]+offset_vector1[0], midpoint[0]+offset_vector1[0]], [
+                xyz1[1]+offset_vector1[1], midpoint[1]+offset_vector1[1]], [xyz1[2]+offset_vector1[2], midpoint[2]+offset_vector1[2]]])
+            bondLines.append([[midpoint[0]+offset_vector1[0], xyz2[0]+offset_vector1[0]], [
+                midpoint[1]+offset_vector1[1], xyz2[1]+offset_vector1[1]], [midpoint[2]+offset_vector1[2], xyz2[2]+offset_vector1[2]]])
+            bondLines.append([[xyz1[0]+offset_vector2[0], midpoint[0]+offset_vector2[0]], [
+                xyz1[1]+offset_vector2[1], midpoint[1]+offset_vector2[1]], [xyz1[2]+offset_vector2[2], midpoint[2]+offset_vector2[2]]])
+            bondLines.append([[midpoint[0]+offset_vector2[0], xyz2[0]+offset_vector2[0]], [
+                midpoint[1]+offset_vector2[1], xyz2[1]+offset_vector2[1]], [midpoint[2]+offset_vector2[2], xyz2[2]+offset_vector2[2]]])
+
+        elif bond_type == 3:
+            # parallel line
+            # y increase
+            # line
+            # Calculate perpendicular vector to center vector
+            perp_vector = np.array([center_vector[1], -center_vector[0], 0])
+            perp_vector /= np.linalg.norm(perp_vector)
+
+            # Calculate offset vectors
+            offset_vector1 = 0.125 * perp_vector
+            offset_vector2 = -0.125 * perp_vector
+
+            # Calculate parallel lines
+            _l1 = [[xyz1[0]+offset_vector1[0], xyz2[0]+offset_vector1[0]], [
+                xyz1[1]+offset_vector1[1], xyz2[1]+offset_vector1[1]], [xyz1[2]+offset_vector1[2], xyz2[2]+offset_vector1[2]]]
+            _l2 = [[xyz1[0], xyz2[0]], [
+                xyz1[1], xyz2[1]], [xyz1[2], xyz2[2]]]
+            _l3 = [[xyz1[0]+offset_vector2[0], xyz2[0]+offset_vector2[0]], [
+                xyz1[1]+offset_vector2[1], xyz2[1]+offset_vector2[1]], [xyz1[2]+offset_vector2[2], xyz2[2]+offset_vector2[2]]]
+
+            # Break each parallel line into two lines
+            bondLines.append([[xyz1[0]+offset_vector1[0], midpoint[0]+offset_vector1[0]], [
+                xyz1[1]+offset_vector1[1], midpoint[1]+offset_vector1[1]], [xyz1[2]+offset_vector1[2], midpoint[2]+offset_vector1[2]]])
+            bondLines.append([[midpoint[0]+offset_vector1[0], xyz2[0]+offset_vector1[0]], [
+                midpoint[1]+offset_vector1[1], xyz2[1]+offset_vector1[1]], [midpoint[2]+offset_vector1[2], xyz2[2]+offset_vector1[2]]])
+            bondLines.append([[xyz1[0], midpoint[0]], [
+                xyz1[1], midpoint[1]], [xyz1[2], midpoint[2]]])
+            bondLines.append([[midpoint[0], xyz2[0]], [
+                midpoint[1], xyz2[1]], [midpoint[2], xyz2[2]]])
+            bondLines.append([[xyz1[0]+offset_vector2[0], midpoint[0]+offset_vector2[0]], [
+                xyz1[1]+offset_vector2[1], midpoint[1]+offset_vector2[1]], [xyz1[2]+offset_vector2[2], midpoint[2]+offset_vector2[2]]])
+            bondLines.append([[midpoint[0]+offset_vector2[0], xyz2[0]+offset_vector2[0]], [
+                midpoint[1]+offset_vector2[1], xyz2[1]+offset_vector2[1]], [midpoint[2]+offset_vector2[2], xyz2[2]+offset_vector2[2]]])
+
+        return bondLines, bond_type
+
     def line_mid_points(self, xyz1, xyz2):
         '''
-        Divide a line in two equal parts 
+        Divide a line in two equal parts
 
         Parameters
         ----------
@@ -524,6 +632,8 @@ class Vizr3D():
             _atom1Id = int(self.atomBonds[i]['id']) - 1
             # atom symbol
             _atom1Symbol = self.atomBonds[i]['symbol']
+            # atom color
+            _atom1Color = self.set_color(_atom1Symbol)
             # atom bond list
             _atom1BondList = self.atomBonds[i]['bonds']
             atom1BondSize = len(_atom1BondList)
@@ -540,12 +650,15 @@ class Vizr3D():
                     _atom2Id = int(_atom1BondList[j][0]) - 1
                     # atom [2] symbol
                     _atom2Symbol = _atom1BondList[j][1]
+                    # atom color
+                    _atom2Color = self.set_color(_atom2Symbol)
                     # atom [1] - atom [2] bond type
                     _bondType = int(_atom1BondList[j][3])
 
                     # set color
                     lineColor = ['w', 'w', 'w']
                     lineWidth = [4, 3, 2]
+                    lineColorAtoms = [_atom1Color, _atom2Color]
 
                     # xyz
                     _atom2X = self.xyzList[_atom2Id, 0]
@@ -557,24 +670,50 @@ class Vizr3D():
                     xyzMean, xyzPlane, isPlane, xyzL, perpendicularAxis = self.line_property(
                         _atom1XYZ, _atom2XYZ)
 
-                    # bond connection (points)
-                    _bondConnection, _bondTypeLog = self.create_bond_line(
-                        _atom1XYZ, _atom2XYZ, _bondType)
+                    # create bond line
+                    create_bond_line_version = 1
+                    if create_bond_line_version == 1:
+                        # bond connection (points)
+                        _bondConnection, _bondTypeLog = self.create_bond_line(
+                            _atom1XYZ, _atom2XYZ, _bondType)
 
-                    # size
-                    _bondConnectionSize = len(_bondConnection)
+                        # size
+                        _bondConnectionSize = len(_bondConnection)
 
-                    # check
-                    if _bondConnectionSize == 1:
-                        _vector = _bondConnection[0]
-                        ax.plot3D(_vector[0], _vector[1], _vector[2],
-                                  linewidth=lineWidth[_bondType-1], c=lineColor[_bondType-1])
-                    else:
-                        # line color: black
-                        for b in range(_bondConnectionSize):
-                            _vector = _bondConnection[b]
+                        # check
+                        if _bondConnectionSize == 1:
+                            _vector = _bondConnection[0]
                             ax.plot3D(_vector[0], _vector[1], _vector[2],
                                       linewidth=lineWidth[_bondType-1], c=lineColor[_bondType-1])
+                        else:
+                            # line color: black
+                            for b in range(_bondConnectionSize):
+                                _vector = _bondConnection[b]
+                                ax.plot3D(_vector[0], _vector[1], _vector[2],
+                                          linewidth=lineWidth[_bondType-1], c=lineColor[_bondType-1])
+
+                    else:
+                        # bond connection (points)
+                        _bondConnection, _bondTypeLog = self.create_bond_line(
+                            _atom1XYZ, _atom2XYZ, _bondType)
+
+                        # size
+                        _bondConnectionSize = len(_bondConnection)
+
+                        # check
+                        if _bondConnectionSize == 2:
+                            item_i = 0
+                            for item in _bondConnection:
+                                _vector = item
+                                ax.plot3D(_vector[0], _vector[1], _vector[2],
+                                          linewidth=lineWidth[_bondType-1], c=lineColorAtoms[item_i])
+                                item_i += 1
+                        else:
+                            # line color: black
+                            for b in range(_bondConnectionSize):
+                                _vector = _bondConnection[b]
+                                ax.plot3D(_vector[0], _vector[1], _vector[2],
+                                          linewidth=lineWidth[_bondType-1], c=lineColor[_bondType-1])
 
             # obs show
             if obsOption[0]:

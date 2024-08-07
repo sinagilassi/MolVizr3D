@@ -5,10 +5,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import cm
-import plotly as py
-import plotly.express as px
-import plotly.graph_objects as go
-import plotly.io
+import math
 # internal
 from .observer import Observer
 
@@ -23,6 +20,7 @@ class Vizr3D():
 
     # properties
     _structure_type = ''
+    plotScale = []
 
     def __init__(self, atomElements, atomBonds, xyzList, xyzCenterList, robs, tetaNo, phiNo, limits):
         self.atomElements = atomElements
@@ -161,7 +159,7 @@ class Vizr3D():
         else:
             return '#'+_color
 
-    def set_size(self, symbol, _s=2):
+    def set_size(self, symbol, _sy=300, _s=1):
         '''
         Set atom size (spherical shape)
 
@@ -177,8 +175,8 @@ class Vizr3D():
         size: int
             size
         '''
-        _sx = 200
         _sy = 300
+        _sx = 0.50*_sy
 
         sizes = {
             "H": _s*_sx,
@@ -269,7 +267,10 @@ class Vizr3D():
         bondLines: list
             list of bond lines
         '''
+        # bond lines
         bondLines = []
+        # bond length
+        bondLength = []
 
         xL, yL, zL = xyzR*np.array(xyzL)
 
@@ -281,7 +282,11 @@ class Vizr3D():
             xyz1[1], xyz2[1]], [xyz1[2], xyz2[2]]]
 
         if bond_type == 1:
+            # bond line
             bondLines.append(center_line)
+            # bond length
+            _bond_length_res = self.calculate_distance(xyz1, xyz2)
+            bondLength.append(_bond_length_res)
 
         elif bond_type == 2:
             # parallel line
@@ -301,8 +306,25 @@ class Vizr3D():
             _l2 = [[xyz1[0]+offset_vector2[0], xyz2[0]+offset_vector2[0]], [
                 xyz1[1]+offset_vector2[1], xyz2[1]+offset_vector2[1]], [xyz1[2]+offset_vector2[2], xyz2[2]+offset_vector2[2]]]
 
+            # lines
+            _l1_xyz1 = [xyz1[0]+offset_vector1[0], xyz1[1] +
+                        offset_vector1[1], xyz1[2]+offset_vector1[2]]
+            _l1_xyz2 = [xyz2[0]+offset_vector1[0], xyz2[1] +
+                        offset_vector1[1], xyz2[2]+offset_vector1[2]]
+
+            _l2_xyz1 = [xyz1[0]+offset_vector2[0], xyz1[1] +
+                        offset_vector2[1], xyz1[2]+offset_vector2[2]]
+            _l2_xyz2 = [xyz2[0]+offset_vector2[0], xyz2[1] +
+                        offset_vector2[1], xyz2[2]+offset_vector2[2]]
+
+            # bond lines
             bondLines.append(_l1)
             bondLines.append(_l2)
+            # bond length
+            _bond_length_res = self.calculate_distance(_l1_xyz1, _l1_xyz2)
+            bondLength.append(_bond_length_res)
+            _bond_length_res = self.calculate_distance(_l2_xyz1, _l2_xyz2)
+            bondLength.append(_bond_length_res)
 
         elif bond_type == 3:
             # parallel line
@@ -325,11 +347,32 @@ class Vizr3D():
             _l3 = [[xyz1[0]+offset_vector2[0], xyz2[0]+offset_vector2[0]], [
                 xyz1[1]+offset_vector2[1], xyz2[1]+offset_vector2[1]], [xyz1[2]+offset_vector2[2], xyz2[2]+offset_vector2[2]]]
 
+            # lines
+            _l1_xyz1 = [xyz1[0]+offset_vector1[0], xyz1[1] +
+                        offset_vector1[1], xyz1[2]+offset_vector1[2]]
+            _l1_xyz2 = [xyz2[0]+offset_vector1[0], xyz2[1] +
+                        offset_vector1[1], xyz2[2]+offset_vector1[2]]
+            _l2_xyz1 = xyz1
+            _l2_xyz2 = xyz2
+            _l3_xyz1 = [xyz1[0]+offset_vector2[0], xyz1[1] +
+                        offset_vector2[1], xyz1[2]+offset_vector2[2]]
+            _l3_xyz2 = [xyz2[0]+offset_vector2[0], xyz2[1] +
+                        offset_vector2[1], xyz2[2]+offset_vector2[2]]
+
+            # bond lines
             bondLines.append(_l1)
             bondLines.append(_l2)
             bondLines.append(_l3)
+            # bond length
+            # bond length
+            _bond_length_res = self.calculate_distance(_l1_xyz1, _l1_xyz2)
+            bondLength.append(_bond_length_res)
+            _bond_length_res = self.calculate_distance(_l2_xyz1, _l2_xyz2)
+            bondLength.append(_bond_length_res)
+            _bond_length_res = self.calculate_distance(_l3_xyz1, _l3_xyz2)
+            bondLength.append(_bond_length_res)
 
-        return bondLines, bond_type
+        return bondLines, bond_type, bondLength
 
     def create_bond_line_V2(self, xyz1, xyz2, bond_type, xyzL=[1, 1, 1], xyzR=0.15):
         '''
@@ -537,7 +580,80 @@ class Vizr3D():
         except Exception as e:
             raise Exception(e)
 
-    def view3d(self, elev=None, azim=None, figSize='default', obsOption=[False, 0]):
+    def set_plot_scale(self):
+        '''
+        Set plot scale
+        '''
+        # atom no
+        atomNo = len(self.xyzList)
+        # bond no
+        bondNo = len(self.atomBonds)
+
+        # bond length list
+        bondLengthList = []
+
+        # *** using bond block
+        for i in range(bondNo):
+            # atom id
+            _atom1Id = int(self.atomBonds[i]['id']) - 1
+            # atom symbol
+            _atom1Symbol = self.atomBonds[i]['symbol']
+            # atom color
+            _atom1Color = self.set_color(_atom1Symbol)
+            # atom bond list
+            _atom1BondList = self.atomBonds[i]['bonds']
+            atom1BondSize = len(_atom1BondList)
+
+            _atom1X = self.xyzList[_atom1Id, 0]
+            _atom1Y = self.xyzList[_atom1Id, 1]
+            _atom1Z = self.xyzList[_atom1Id, 2]
+            _atom1XYZ = [_atom1X, _atom1Y, _atom1Z]
+
+            # draw bond
+            if atom1BondSize > 0:
+                for j in range(atom1BondSize):
+                    # atom [2] id
+                    _atom2Id = int(_atom1BondList[j][0]) - 1
+                    # atom [2] symbol
+                    _atom2Symbol = _atom1BondList[j][1]
+                    # atom color
+                    _atom2Color = self.set_color(_atom2Symbol)
+                    # atom [1] - atom [2] bond type
+                    _bondType = int(_atom1BondList[j][3])
+
+                    # xyz
+                    _atom2X = self.xyzList[_atom2Id, 0]
+                    _atom2Y = self.xyzList[_atom2Id, 1]
+                    _atom2Z = self.xyzList[_atom2Id, 2]
+                    _atom2XYZ = [_atom2X, _atom2Y, _atom2Z]
+
+                    # bond connection (points)
+                    _bondConnection, _bondTypeLog, _bondLengths = self.create_bond_line(
+                        _atom1XYZ, _atom2XYZ, _bondType)
+
+                    # save bond length
+                    bondLengthList.append(_bondLengths)
+
+        # check bond length list
+        if len(bondLengthList) > 0:
+            # flatten list
+            bondLengthList_flatten = sum(bondLengthList, [])
+
+            # max bond length
+            maxBondLength = max(bondLengthList_flatten)
+            # min bond length
+            minBondLength = min(bondLengthList_flatten)
+            # mean bond length
+            meanBondLength = np.mean(bondLengthList_flatten)
+            # median bond length
+            medianBondLength = np.median(bondLengthList_flatten)
+
+            # set plot scale
+            self.plotScale = [minBondLength, maxBondLength,
+                              meanBondLength, medianBondLength]
+
+    def view3d(self, elev=None, azim=None, figSize='default', obsOption=[False, 0],
+               dpi=100, pixel_width=800, pixel_height=600, bg_color='#090A0B'):
         '''
         Draw a compound in the cartesian coordinate
         atomElements atom symbol
@@ -562,21 +678,30 @@ class Vizr3D():
         fig: figure
             figure
         '''
+        # plot summary
+        plot_summary = []
         # 3d plot
         if figSize == 'default':
-            fig = plt.figure(facecolor='#000000')
+            fig = plt.figure(figsize=(10, 6), facecolor=f'{bg_color}')
         else:
-            fig = plt.figure(figsize=figSize, facecolor='#000000')
+            fig_size_inches = (pixel_width / dpi, pixel_height / dpi)
+            fig = plt.figure(figsize=fig_size_inches,
+                             dpi=dpi, facecolor=f'{bg_color}')
 
-        # Create a colormap from white to black
-        cmap = plt.get_cmap('Greys')
+        # remove paddings
+        fig.tight_layout(pad=0)
 
         # projection
         ax = plt.axes(projection='3d')
+
+        # Adjust the layout to fill the entire figure
+        fig.subplots_adjust(left=0, right=1, top=1, bottom=0)
+
         # axis display
         plt.axis('off')
         # color
-        ax.set_facecolor('#000000')
+        ax_color = f'{bg_color}'
+        ax.set_facecolor(ax_color)
 
         # legend
         legend_list = []
@@ -588,6 +713,15 @@ class Vizr3D():
 
         # create 3d frame
         xyzLenMax, xyzLenMin, xyzR, xLen, yLen, zLen = self.create_3dframe()
+
+        # *** plot scale
+        plot_scale_res = self.set_plot_scale()
+        # min bond length
+        min_bond_length = self.plotScale[0]
+        # max bond length
+        max_bond_length = self.plotScale[1]
+        # set marker size
+        marker_size_0 = self.set_marker_size(min_bond_length, max_bond_length)
 
         # *** atom visualization
         for i in range(atomNo):
@@ -603,12 +737,15 @@ class Vizr3D():
             # symbol
             _atomSymbol = str(self.atomElements[i]).strip()
             # size
-            _atomSize = self.set_size(_atomSymbol)
+            _atomSize = self.set_size(_atomSymbol, _sy=marker_size_0)
             # color
             _atomColor = self.set_color(_atomSymbol)
 
             # atom mark
             atomMark = str(_atomSymbol) + str(_atomId)
+
+            # marker edgecolor
+            marker_edgecolor = str('#5C5C5C')
 
             # legend list
             if _atomSymbol not in legend_list:
@@ -616,11 +753,11 @@ class Vizr3D():
 
                 # draw atom 1
                 ax.scatter3D(_atom1X, _atom1Y, _atom1Z,
-                             label=_atomSymbol, s=_atomSize, color=_atomColor, cmap='hot', label=_atomSymbol)
+                             label=_atomSymbol, s=_atomSize, color=_atomColor, edgecolors=marker_edgecolor)
             else:
                 # draw atom 1
                 ax.scatter3D(_atom1X, _atom1Y, _atom1Z,
-                             label=_atomSymbol, s=_atomSize, color=_atomColor, cmap='hot')
+                             s=_atomSize, color=_atomColor, edgecolors=marker_edgecolor)
 
         # reset
         i = 0
@@ -666,15 +803,29 @@ class Vizr3D():
                     _atom2Z = self.xyzList[_atom2Id, 2]
                     _atom2XYZ = [_atom2X, _atom2Y, _atom2Z]
 
+                    # distance
+                    _distance = self.calculate_distance(_atom1XYZ, _atom2XYZ)
+
+                    # plot summary
+                    plot_summary.append(
+                        {
+                            'atom1Id': _atom1Id+1,
+                            'atom2Id': _atom2Id+1,
+                            'atom1Symbol': str(_atom1Symbol) + str(_atom1Id+1),
+                            'atom2Symbol': str(_atom2Symbol) + str(_atom2Id+1),
+                            'distance': _distance
+                        }
+                    )
+
                     # line property
                     xyzMean, xyzPlane, isPlane, xyzL, perpendicularAxis = self.line_property(
                         _atom1XYZ, _atom2XYZ)
 
-                    # create bond line
+                    # ** create bond line
                     create_bond_line_version = 1
                     if create_bond_line_version == 1:
                         # bond connection (points)
-                        _bondConnection, _bondTypeLog = self.create_bond_line(
+                        _bondConnection, _bondTypeLog, _ = self.create_bond_line(
                             _atom1XYZ, _atom2XYZ, _bondType)
 
                         # size
@@ -694,26 +845,25 @@ class Vizr3D():
 
                     else:
                         # bond connection (points)
-                        _bondConnection, _bondTypeLog = self.create_bond_line(
+                        _bondConnection, _bondTypeLog = self.create_bond_line_V2(
                             _atom1XYZ, _atom2XYZ, _bondType)
 
                         # size
                         _bondConnectionSize = len(_bondConnection)
 
-                        # check
-                        if _bondConnectionSize == 2:
-                            item_i = 0
-                            for item in _bondConnection:
-                                _vector = item
-                                ax.plot3D(_vector[0], _vector[1], _vector[2],
-                                          linewidth=lineWidth[_bondType-1], c=lineColorAtoms[item_i])
-                                item_i += 1
-                        else:
-                            # line color: black
-                            for b in range(_bondConnectionSize):
-                                _vector = _bondConnection[b]
-                                ax.plot3D(_vector[0], _vector[1], _vector[2],
-                                          linewidth=lineWidth[_bondType-1], c=lineColor[_bondType-1])
+                        # color index
+                        color_index = 0
+                        # line color: black
+                        for b in range(_bondConnectionSize):
+                            _vector = _bondConnection[b]
+                            ax.plot3D(_vector[0], _vector[1], _vector[2],
+                                      linewidth=lineWidth[_bondType-1], c=lineColorAtoms[color_index])
+                            # check
+                            if color_index == 1:
+                                color_index = 0
+                            else:
+                                # set color index
+                                color_index += 1
 
             # obs show
             if obsOption[0]:
@@ -721,210 +871,32 @@ class Vizr3D():
 
         # ax legends
         ax.legend(legend_list)
+        # legend position end right
+        # legend marker size
+        # ax.legend(loc='upper right', scatterpoints=1, fontsize=10)
+
+        plt.legend(loc="upper right", markerscale=0.25,
+                   scatterpoints=1, fontsize=10)
 
         # axis setting
         ax.set_xlabel("$X$")
         ax.set_ylabel("$Y$")
         ax.set_zlabel("$Z$")
-        # ax.legend()
+
+        ax.autoscale(False)
+
         # set limits
-        _maxVal = np.max(self.xyzList)
-        ax.set_xlim(float(-_maxVal), float(_maxVal))
-        ax.set_ylim(float(-_maxVal), float(_maxVal))
-        ax.set_zlim(float(-_maxVal), float(_maxVal))
+        # _maxVal = np.max(self.xyzList)
+        # ax.set_xlim(float(-_maxVal), float(_maxVal))
+        # ax.set_ylim(float(-_maxVal), float(_maxVal))
+        # ax.set_zlim(float(-_maxVal), float(_maxVal))
 
         # set angles/elevations
         ax.view_init(elev=elev, azim=azim)
         plt.show()
 
-    def view3d_plotly(self, elev=None, azim=None, figSize='default', obsOption=[False, 0]):
-        '''
-        Draw a compound in the cartesian coordinate
-        atomElements atom symbol
-        atomBonds atom bonds (bond blocks)
-        xyzList atom position in the cartesian coordinate
-        figSize=(10, 10) plt 3d setting
-        obsOption=[False, 0] display center point [0,0,0]
-
-        Parameters
-        ----------
-        elev: int
-            elevation of the view angle (default: 30)
-        azim: int
-            azimuthal angle of the view angle (default: 30)
-        figSize: tuple
-            figure size
-        obsOption: list
-            display center point [False,0]
-
-        Returns
-        -------
-        fig: figure
-            figure
-        '''
-        # Define custom metallic colorscale
-        metallic_colorscale = [
-            ['rgba(105, 105, 105,0.5)'],  # Dark gray
-            [0.1, 'rgb(169, 169, 169)'],  # Darker silver
-            [0.2, 'rgb(192, 192, 192)'],  # Silver
-            [0.3, 'rgb(211, 211, 211)'],  # Light gray
-            [0.4, 'rgb(220, 220, 220)'],  # Gainsboro
-            [0.5, 'rgb(245, 245, 245)'],  # White smoke
-            [0.6, 'rgb(220, 220, 220)'],  # Gainsboro
-            [0.7, 'rgb(211, 211, 211)'],  # Light gray
-            [0.8, 'rgb(192, 192, 192)'],  # Silver
-            [0.9, 'rgb(169, 169, 169)'],  # Darker silver
-            [1.0, 'rgb(105, 105, 105)']   # Dark gray
-        ]
-
-        # 3d plot
-        # Create the figure
-        fig = go.Figure()
-
-        # atom no
-        atomNo = len(self.xyzList)
-        # bond no
-        bondNo = len(self.atomBonds)
-
-        # create 3d frame
-        xyzLenMax, xyzLenMin, xyzR, xLen, yLen, zLen = self.create_3dframe()
-
-        # *** atom visualization
-        for i in range(atomNo):
-            # xyz
-            _atom1X = self.xyzList[i, 0]
-            _atom1Y = self.xyzList[i, 1]
-            _atom1Z = self.xyzList[i, 2]
-            _atom1XYZ = [_atom1X, _atom1Y, _atom1Z]
-
-            # color
-            # atom id
-            _atomId = int(i+1)
-            # symbol
-            _atomSymbol = str(self.atomElements[i]).strip()
-            # size
-            _atomSize = int(self.set_size(_atomSymbol))
-            # color
-            _atomColor = str(self.set_color(_atomSymbol))
-            # atom mark
-            atomMark = str(_atomSymbol) + str(_atomId)
-
-            # draw atom 1
-            # label, atomsize, atomcolor
-            fig.add_trace(go.Scatter3d(x=[_atom1X],
-                                       y=[_atom1Y],
-                                       z=[_atom1Z],
-                                       mode='markers',
-                                       # Change sizemode to 'pixel'
-                                       marker=dict(
-                                           size=_atomSize, sizemode='area', sizeref=1, color=_atomColor),
-                                       hoverinfo='none'))
-
-        # reset
-        i = 0
-
-        # *** bond visualization
-        # *** using bond block
-        for i in range(bondNo):
-            # atom id
-            _atom1Id = int(self.atomBonds[i]['id']) - 1
-            # atom symbol
-            _atom1Symbol = self.atomBonds[i]['symbol']
-            # atom bond list
-            _atom1BondList = self.atomBonds[i]['bonds']
-            atom1BondSize = len(_atom1BondList)
-
-            _atom1X = self.xyzList[_atom1Id, 0]
-            _atom1Y = self.xyzList[_atom1Id, 1]
-            _atom1Z = self.xyzList[_atom1Id, 2]
-            _atom1XYZ = [_atom1X, _atom1Y, _atom1Z]
-
-            # draw bond
-            if atom1BondSize > 0:
-                for j in range(atom1BondSize):
-                    # atom [2] id
-                    _atom2Id = int(_atom1BondList[j][0]) - 1
-                    # atom [2] symbol
-                    _atom2Symbol = _atom1BondList[j][1]
-                    # atom [1] - atom [2] bond type
-                    _bondType = int(_atom1BondList[j][3])
-
-                    # set color
-                    lineColor = ['b', 'r', 'g']
-                    lineWidth = [1, 3, 5]
-
-                    # xyz
-                    _atom2X = self.xyzList[_atom2Id, 0]
-                    _atom2Y = self.xyzList[_atom2Id, 1]
-                    _atom2Z = self.xyzList[_atom2Id, 2]
-                    _atom2XYZ = [_atom2X, _atom2Y, _atom2Z]
-
-                    # line property
-                    xyzMean, xyzPlane, isPlane, xyzL, perpendicularAxis = self.line_property(
-                        _atom1XYZ, _atom2XYZ)
-
-                    # bond connection (points)
-                    _bondConnection, _bondTypeLog = self.create_bond_line(
-                        _atom1XYZ, _atom2XYZ, _bondType)
-
-                    # size
-                    _bondConnectionSize = len(_bondConnection)
-
-                    # draw
-                    # line width, line color
-                    # check
-                    if _bondConnectionSize == 1:
-                        _vector = _bondConnection[0]
-                        fig.add_trace(go.Scatter3d(
-                            x=_vector[0], y=_vector[1], z=_vector[2], mode='lines', line=dict(color='#ffffff', width=2)))
-                    else:
-                        # line color: black
-                        for b in range(_bondConnectionSize):
-                            _vector = _bondConnection[b]
-                            fig.add_trace(go.Scatter3d(
-                                x=_vector[0], y=_vector[1], z=_vector[2], mode='lines', line=dict(color='#ffffff', width=2)))
-
-        # Set the limits of the axes
-        fig.update_layout(scene=dict(
-            xaxis=dict(nticks=4, range=[-3, 3]),
-            yaxis=dict(nticks=4, range=[-3, 3]),
-            zaxis=dict(nticks=4, range=[-3, 3])
-        ))
-        # Set figure size to a square
-        fig.update_layout(width=600, height=400)
-
-        # Set background color to dark
-        fig.update_layout(
-            paper_bgcolor='rgb(0,0,0)',
-            plot_bgcolor='rgb(0,0,0)',
-            scene=dict(
-                xaxis=dict(showbackground=True, backgroundcolor='rgb(0,0,0)'),
-                yaxis=dict(showbackground=True, backgroundcolor='rgb(0,0,0)'),
-                zaxis=dict(showbackground=True, backgroundcolor='rgb(0,0,0)')
-            )
-        )
-
-        # Remove axes and other elements
-        fig.update_layout(
-            scene=dict(
-                xaxis=dict(showticklabels=False, showgrid=False,
-                           zeroline=False, showspikes=False),
-                yaxis=dict(showticklabels=False, showgrid=False,
-                           zeroline=False, showspikes=False),
-                zaxis=dict(showticklabels=False, showgrid=False,
-                           zeroline=False, showspikes=False)
-            ),
-            showlegend=False,
-            margin=dict(l=0, r=0, b=0, t=0)
-        )
-
-        # Show the plot with zoom disabled
-        fig.show(config={
-            'scrollZoom': True,  # Disable zoom with scroll
-            'displayModeBar': True,
-            'displaylogo': False,
-            'modeBarButtonsToRemove': ['zoom2d', 'zoomIn2d', 'zoomOut2d', 'pan2d']
-        })
+        # res
+        return plot_summary
 
     def view3dobs(self, elev=None, azim=None, figSize=(10, 10), obsOption=[True, 0]):
         '''
@@ -1053,3 +1025,51 @@ class Vizr3D():
             return r, _l1, _l2
         except Exception as e:
             raise Exception(e)
+
+    def calculate_distance(self, xyz1, xyz2):
+        """
+        Calculate the Euclidean distance between two points.
+
+        Parameters:
+        ----------
+        xyz1 : list
+            Coordinates of the first point [x, y, z]
+        xyz2 : list
+            Coordinates of the second point [x, y, z]
+
+        Returns:
+        -------
+        float
+            Distance between the two points
+        """
+        return math.sqrt((xyz2[0] - xyz1[0])**2 +
+                         (xyz2[1] - xyz1[1])**2 +
+                         (xyz2[2] - xyz1[2])**2)
+
+    def set_marker_size(self, min_distance, ref_length=1, min_marker_size=200, max_marker_size=500):
+        '''
+        Set the plot view based on the minimum distance.
+
+        Parameters:
+        ----------
+        min_distance : float
+            Minimum distance between points
+        ref_length : float
+            Reference length for scaling
+        min_marker_size : float
+            Minimum marker size
+        max_marker_size : float
+            Maximum
+
+        Returns:
+        -------
+        float
+            Marker size
+        '''
+        scaling_factor = min_marker_size / ref_length
+        marker_size = min_distance * scaling_factor
+
+        # Ensure the marker size is within the desired range
+        marker_size = min(max_marker_size, max(min_marker_size, marker_size))
+
+        return marker_size

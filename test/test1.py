@@ -3,12 +3,16 @@ import os
 import json
 import numpy as np
 import molvizr3d as mv3d
+import pprint
 
 # check version
 # print(mv3d.__version__)
 
 # sdf file
-sdf_file_name_1 = 'test\Conformer3D_COMPOUND_CID_22044.sdf'
+# sdf_file_name_1 = 'test\Conformer3D_COMPOUND_CID_22044.sdf'
+# sdf_file_name_1 = 'test\Conformer3D_COMPOUND_CID_7979.sdf'
+# sdf_file_name_1 = 'test\Conformer3D_COMPOUND_CID_887.sdf'
+sdf_file_name_1 = 'test\Conformer3D_COMPOUND_CID_8134.sdf'
 sdf_file = os.path.join(os.getcwd(), sdf_file_name_1)
 # print(sdf_file)
 
@@ -22,7 +26,7 @@ mol = mv3d.td(sdf_file)
 # bond block
 # bond_block = mol['bond_block']
 # xyz list
-atom_xyz = mol.atom_xyz
+# atom_xyz = mol.atom_xyz
 # save
 # Save to a text file (comma-separated by default)
 # np.savetxt(os.path.join(os.getcwd() + '/test/' + 'xyz_list.txt'), atom_xyz)
@@ -36,4 +40,5 @@ atom_xyz = mol.atom_xyz
 # with open('bond_block.json', 'w') as f:
 #     json.dump(bond_block, f)
 # print(type(mol))
-mol.view3d()
+plot_summary = mol.view3d()
+pprint.pprint(plot_summary)

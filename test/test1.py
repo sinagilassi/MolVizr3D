@@ -10,9 +10,9 @@ import pprint
 
 # sdf file
 # sdf_file_name_1 = 'test\Conformer3D_COMPOUND_CID_22044.sdf'
-# sdf_file_name_1 = 'test\Conformer3D_COMPOUND_CID_7979.sdf'
+sdf_file_name_1 = 'test\Conformer3D_COMPOUND_CID_7979.sdf'
 # sdf_file_name_1 = 'test\Conformer3D_COMPOUND_CID_887.sdf'
-sdf_file_name_1 = 'test\Conformer3D_COMPOUND_CID_8134.sdf'
+# sdf_file_name_1 = 'test\Conformer3D_COMPOUND_CID_8134.sdf'
 sdf_file = os.path.join(os.getcwd(), sdf_file_name_1)
 # print(sdf_file)
 
@@ -41,4 +41,4 @@ mol = mv3d.td(sdf_file)
 #     json.dump(bond_block, f)
 # print(type(mol))
 plot_summary = mol.view3d()
-pprint.pprint(plot_summary)
+# pprint.pprint(plot_summary)

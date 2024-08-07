@@ -682,7 +682,7 @@ class Vizr3D():
         plot_summary = []
         # 3d plot
         if figSize == 'default':
-            fig = plt.figure(figsize=(10, 6), facecolor=f'{bg_color}')
+            fig = plt.figure(figsize=(6, 6), facecolor=f'{bg_color}')
         else:
             fig_size_inches = (pixel_width / dpi, pixel_height / dpi)
             fig = plt.figure(figsize=fig_size_inches,
@@ -883,13 +883,14 @@ class Vizr3D():
         ax.set_ylabel("$Y$")
         ax.set_zlabel("$Z$")
 
-        ax.autoscale(False)
+        ax.autoscale(True)
+        ax.set_aspect('auto')
 
         # set limits
-        # _maxVal = np.max(self.xyzList)
-        # ax.set_xlim(float(-_maxVal), float(_maxVal))
-        # ax.set_ylim(float(-_maxVal), float(_maxVal))
-        # ax.set_zlim(float(-_maxVal), float(_maxVal))
+        _maxVal = np.max(self.xyzList)
+        ax.set_xlim(int(-_maxVal), int(_maxVal))
+        ax.set_ylim(int(-_maxVal), int(_maxVal))
+        ax.set_zlim(int(-_maxVal), int(_maxVal))
 
         # set angles/elevations
         ax.view_init(elev=elev, azim=azim)

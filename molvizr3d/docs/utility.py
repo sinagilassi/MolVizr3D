@@ -66,15 +66,20 @@ class Utility():
     @staticmethod
     def ReadContent(sourceContent):
         '''
-        read (load) file with respect to its format extension
+        Read (load) file with respect to its format extension
 
-        args:
-            sourceContent:
-                contentFile: string content of a text file (url request)
-                contentFormat: content format (sdf, json, ...)
+        Parameters
+        ----------
+        sourceContent : dict
+            contentFile: string content of a text file (url request)
+            contentFormat: content format (sdf, json, ...)
 
-        return :
-            file content
+        Returns
+        -------
+        file content : str
+            content of a text file
+        _contentFormat : str
+            content format
         '''
         try:
             #
@@ -96,20 +101,29 @@ class Utility():
                 return fileContent, _contentFormat
             else:
                 raise Exception("target path is not valid.")
-
         except Exception as e:
-            raise
+            raise Exception(e)
 
     @staticmethod
     def OpenFile(filePath):
         '''
-        open file with respect to its format extension
+        Open file with respect to its format extension
 
-        args:
-            filePath: file name dir
+        Parameters
+        ----------
+        filePath : str
+            file path
 
-        return :
-            file content
+        Returns
+        -------
+        file content : str
+            content of a text file
+        fileDir : str
+            file directory
+        fileName : str
+            file name
+        fileFormat : str
+            file format
         '''
         try:
             # check
@@ -131,19 +145,24 @@ class Utility():
                 raise Exception("target path is not valid.")
 
         except Exception as e:
-            raise
+            raise Exception(e)
 
     @staticmethod
     def ListFiles(targetPath, fileExtension=''):
         '''
         list files in a target file
 
-        args:
-            targetPath: target path 
-            fileExtension: file extension, default is empty
+        Parameters
+        ----------
+        targetPath : str
+            target path
+        fileExtension : str
+            file extension, default is empty
 
-        return: 
-            a list of files in the target path
+        Returns
+        -------
+        filesFound : list
+            list of files in the target path
         '''
         try:
             # check
@@ -163,18 +182,30 @@ class Utility():
                 raise Exception("target path is not valid.")
 
         except Exception as e:
-            raise
+            raise Exception(e)
 
     @staticmethod
     def SaveFile(fileContent, fileName, fileFormat, fileDir, logMessage=' file is successfully created and saved in'):
         '''
         save a file with respect to a format
 
-        args:
-            fileContent: file content default: json, string
-            fileName: file name
-            fileFormat: file format
-            fileDir: file directory
+        Parameters
+        ----------
+        fileContent : str
+            file content
+        fileName : str
+            file name
+        fileFormat : str
+            file format
+        fileDir : str
+            file directory
+        logMessage : str
+            log message
+
+        Returns
+        -------
+        bool
+            True if the file is successfully created and saved in
         '''
         try:
             # set
@@ -210,12 +241,24 @@ class Utility():
 
             return True
         except Exception as e:
-            raise
+            raise Exception(e)
 
     @staticmethod
     def FindTargetFileInFolder(file_location, file_format):
         '''
-        find target files with respect to a specific format such as json
+        Find target files with respect to a specific format such as json
+
+        Parameters
+        ----------
+        file_location : str
+            file location
+        file_format : str
+            file format
+
+        Returns
+        -------
+        listFiles : list
+            list of target files
         '''
         try:
             # access directory
@@ -227,15 +270,25 @@ class Utility():
             # res
             return listFiles
         except Exception as e:
-            raise
+            raise Exception(e)
 
     def SelectFile(list_file_names, file_name_ids, file_name_prefix='cid'):
         '''
         select files from a file list based on a query
 
-        args:
-            list_file_names: list of file names along with extensions
-            file_name_ids: a part of file name such as cid_***
+        Parameters
+        ----------
+        list_file_names : list
+            list of file names
+        file_name_ids : list
+            list of file ids
+        file_name_prefix : str
+            file name prefix
+
+        Returns
+        -------
+        listFiles : list
+            list of selected files
         '''
         try:
             # res
@@ -272,15 +325,32 @@ class Utility():
             return listFiles
 
         except Exception as e:
-            raise
+            raise Exception(e)
 
     @staticmethod
     def CreateCVS(csv_list, file_location, file_name='', file_format='json', save_location=''):
         '''
-        create csv file from dictionary
+        Create csv file from dictionary
 
-        return:
-            _save_location, csvFileName
+        Parameters
+        ----------
+        csv_list : list
+            list of dictionary
+        file_location : str
+            file location
+        file_name : str
+            file name
+        file_format : str
+            file format
+        save_location : str
+            save location
+
+        Returns
+        -------
+        _save_location : str
+            save location
+        csvFileName : str
+            csv file name
         '''
         try:
             # check
@@ -323,12 +393,20 @@ class Utility():
         '''
         convert csv content (string) to list
 
-        args:
-            csv_content: csv string content
+        Parameters
+        ----------
+        csv_content : str
+            csv string content
+
+        Returns
+        -------
+        list
+            list of csv content
 
         hint:
             list[0]: column head
             list[1]: records
+
         '''
         try:
             # csv column
@@ -356,12 +434,22 @@ class Utility():
             return csv_list, csv_column, csv_rows, csv_list_len
 
         except Exception as e:
-            raise
+            raise Exception(e)
 
     @staticmethod
     def SaveNpArray(arr, file_name='', location=''):
         '''
-        save numpy array
+        Save numpy array
+
+        Parameters
+        ----------
+        arr : numpy array
+            numpy array
+        file_name : str
+            file name
+        location : str
+            location
+
         '''
         try:
             # full file name
@@ -377,4 +465,4 @@ class Utility():
 
             print(f"save operation is done.")
         except Exception as e:
-            raise
+            raise Exception(e)

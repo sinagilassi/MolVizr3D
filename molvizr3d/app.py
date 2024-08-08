@@ -1,6 +1,6 @@
 # import packages/modules
 import os
-
+import pubchemquery as pcq
 # internal
 from .config import packageName
 from .config import packageShortName
@@ -16,29 +16,79 @@ def main():
     print(_des)
 
 
-def td(f):
+def td(file, display_legend=True):
     '''
-    3d visualizer of a molecule
+    3d visualizer of a compound
 
     Parameters
     ----------
-    f : str
-        molecule file format e.g sdf, mol, json
+    file : str
+        molecule file format (sdf)
+    display_legend : bool
+        display legend (default True)
 
     Returns
     -------
     None
+        display 3d 
     '''
     # check file exists
-    if os.path.exists(f):
+    if os.path.exists(file):
         # parse file
-        MolParserC = MolParser(f)
+        MolParserC = MolParser(file)
         compound_info = MolParserC.read_file()
         # compound
         compound = Compound(compound_info)
-        return compound
+        # display 3d
+        compound.view3d(display_legend=display_legend)
     else:
         raise Exception("file path is not valid.")
+
+
+def td_by_inchi(inchi, display_legend=True):
+    '''
+    3d visualizer of a compound using its InChI identifier
+
+    Parameters
+    ----------
+    inchi : str
+        inchi code
+    display_legend : bool
+        display legend (default True)
+
+    Returns
+    -------
+    None
+        display 3d
+    '''
+    # check inchi
+    if inchi is not None:
+        # get cid
+        cid = pcq.get_cid_by_inchi(inchi)
+        # check
+        if cid is not None:
+            # get sdf
+            sdf = pcq.get_structure_by_cid(cid)
+            # check
+            if sdf is not None:
+                # display 3d
+                # parse file
+                MolParserC = MolParser(None)
+                compound_info = MolParserC.read_file(
+                    sourceContent={
+                        'content': sdf,
+                        'format': 'sdf'
+                    })
+                # compound
+                compound = Compound(compound_info)
+                # display 3d
+                compound.view3d(display_legend=display_legend)
+            else:
+                raise Exception("sdf is not found!")
+        else:
+            raise Exception("cid is not found!")
+    else:
+        raise Exception("inchi is not valid.")
 
 
 if __name__ == "__main__":

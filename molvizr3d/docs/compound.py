@@ -63,7 +63,7 @@ class Compound(Vizr3D):
 
     def __str__(self):
         '''
-        return info about the mat
+        Return info about the mat
         '''
         # check
         if self.parse_prop['mat_name'] is not None:
@@ -196,7 +196,12 @@ class Compound(Vizr3D):
 
     def __update_atom_prop(self, prop_name):
         '''
-        update atom prop
+        Update atom prop
+
+        Parameters
+        ----------
+        prop_name: str
+            atom prop name
         '''
         switchProp = {
             'header_block': 1,
@@ -245,16 +250,24 @@ class Compound(Vizr3D):
 
     def distance_matrix(self):
         '''
-        build a matrix of atom-atom distance
+        Build a matrix of atom-atom distance
         '''
         return Compute.atoms_distance_matrix(self.xyzList, self.atom_elements)
 
     def distance_atoms(self, atom_symbols, atom_index=[]):
         '''
-        calculate distance between two different atoms
+        Calculate distance between two different atoms
 
-        args:
-            atom_symbols: atom symbol list such as ['C','H']
-            atom_index: atom index such as [0,1]
+        Parameters
+        ----------
+        atom_symbols: list
+            atom symbol list such as ['C','H']
+        atom_index: list
+            atom index such as [0,1]
+
+        Returns
+        -------
+        distance: float
+            distance between two atoms
         '''
         return Compute.atoms_distance(self.xyzList, self.atom_elements, atom_symbols, atom_index)

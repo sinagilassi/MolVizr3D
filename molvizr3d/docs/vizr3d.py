@@ -120,44 +120,45 @@ class Vizr3D():
             atom color
         '''
         colors = {
-            "H": 'ffffff',
-            "C": 'BCBCBC',
-            "N": '0586f6',
-            "O": 'f6052a',
-            "F": '2dd930',
-            "Cl": '2dd930',
-            "Br": '950e0e',
-            "I": '360e89',
-            "He": '3dbaf1',
-            "Ne": '3dbaf1',
-            "Ar": '3dbaf1',
-            "Kr": '3dbaf1',
-            "Xe": '3dbaf1',
-            "P": 'f1a03d',
-            "S": 'f1ef3d',
-            "B": 'efc867',
-            "Li": '6b3ccb',
-            "Na": '6b3ccb',
-            "K": '6b3ccb',
-            "Rb": '6b3ccb',
-            "Cs": '6b3ccb',
-            "Fr": '6b3ccb',
-            "Be": '1c881e',
-            "Mg": '1c881e',
-            "Ca": '1c881e',
-            "Sr": '1c881e',
-            "Ba": '1c881e',
-            "Ra": '1c881e',
-            "Ti": '3d3e40',
-            "Fe": 'a48620',
-            "other": 'a729ba'
+            "H": '#ffffff',
+            "C": '#BCBCBC',
+            "N": '#0586f6',
+            "O": '#f6052a',
+            "F": '#2dd930',
+            "Cl": '#2dd930',
+            "Br": '#950e0e',
+            "I": '#360e89',
+            "He": '#3dbaf1',
+            "Ne": '#3dbaf1',
+            "Ar": '#3dbaf1',
+            "Kr": '#3dbaf1',
+            "Xe": '#3dbaf1',
+            "P": '#f1a03d',
+            "S": '#f1ef3d',
+            "B": '#efc867',
+            "Li": '#6b3ccb',
+            "Na": '#6b3ccb',
+            "K": '#6b3ccb',
+            "Rb": '#6b3ccb',
+            "Cs": '#6b3ccb',
+            "Fr": '#6b3ccb',
+            "Be": '#1c881e',
+            "Mg": '#1c881e',
+            "Ca": '#1c881e',
+            "Sr": '#1c881e',
+            "Ba": '#1c881e',
+            "Ra": '#1c881e',
+            "Ti": '#3d3e40',
+            "Fe": '#a48620',
+            "other": '#a729ba'
         }
 
+        # check
         _color = colors.get(str(atom_symbol))
         if _color is None:
-            return '#'+colors.get(str('other'))
+            return colors.get(str('other'))
         else:
-            return '#'+_color
+            return _color
 
     def set_size(self, symbol, _sy=300, _s=1):
         '''
@@ -653,7 +654,7 @@ class Vizr3D():
                               meanBondLength, medianBondLength]
 
     def view3d(self, elev=None, azim=None, figSize='default', obsOption=[False, 0],
-               dpi=100, pixel_width=800, pixel_height=600, bg_color='#090A0B'):
+               dpi=100, pixel_width=800, pixel_height=600, bg_color='#090A0B', display_legend=True):
         '''
         Draw a compound in the cartesian coordinate
         atomElements atom symbol
@@ -672,6 +673,16 @@ class Vizr3D():
             figure size
         obsOption: list
             display center point [False,0]
+        dpi: int
+            dots per inch
+        pixel_width: int
+            width of the figure in pixels
+        pixel_height: int
+            height of the figure in pixels
+        bg_color: str
+            background color
+        display_legend: bool
+            display legend
 
         Returns
         -------
@@ -705,6 +716,9 @@ class Vizr3D():
 
         # legend
         legend_list = []
+
+        # marker label
+        marker_labels = []
 
         # atom no
         atomNo = len(self.xyzList)
@@ -744,6 +758,9 @@ class Vizr3D():
             # atom mark
             atomMark = str(_atomSymbol) + str(_atomId)
 
+            # atom label
+            marker_labels.append(atomMark)
+
             # marker edgecolor
             marker_edgecolor = str('#5C5C5C')
 
@@ -758,6 +775,16 @@ class Vizr3D():
                 # draw atom 1
                 ax.scatter3D(_atom1X, _atom1Y, _atom1Z,
                              s=_atomSize, color=_atomColor, edgecolors=marker_edgecolor)
+
+        # *** atom label display
+        # for i, label in enumerate(marker_labels):
+        #     # xyz
+        #     _atom1X = self.xyzList[i, 0]
+        #     _atom1Y = self.xyzList[i, 1]
+        #     _atom1Z = self.xyzList[i, 2]
+        #     # set
+        #     ax.text(_atom1X, _atom1Y, _atom1Z, label, ha='left',
+        #             va='center', color='red', fontsize=12)
 
         # reset
         i = 0
@@ -869,14 +896,13 @@ class Vizr3D():
             if obsOption[0]:
                 ax.scatter3D(obsOption[1], 0, 0, s=40)
 
-        # ax legends
-        ax.legend(legend_list)
-        # legend position end right
-        # legend marker size
-        # ax.legend(loc='upper right', scatterpoints=1, fontsize=10)
-
-        plt.legend(loc="upper right", markerscale=0.25,
-                   scatterpoints=1, fontsize=10)
+        # check
+        if display_legend:
+            # ax legends
+            ax.legend(legend_list)
+            # legend position end right
+            plt.legend(loc="upper right", markerscale=0.25,
+                       scatterpoints=1, fontsize=10)
 
         # axis setting
         ax.set_xlabel("$X$")
@@ -884,13 +910,21 @@ class Vizr3D():
         ax.set_zlabel("$Z$")
 
         ax.autoscale(True)
-        ax.set_aspect('auto')
+        # ax.set_aspect('auto')
+        ax.set_aspect('equal')
 
         # set limits
+        set_lim_offset = 1
         _maxVal = np.max(self.xyzList)
-        ax.set_xlim(int(-_maxVal), int(_maxVal))
-        ax.set_ylim(int(-_maxVal), int(_maxVal))
-        ax.set_zlim(int(-_maxVal), int(_maxVal))
+        ax.set_xlim(int(-_maxVal) + -set_lim_offset,
+                    int(_maxVal) + set_lim_offset)
+        ax.set_ylim(int(-_maxVal) + -set_lim_offset,
+                    int(_maxVal) + set_lim_offset)
+        ax.set_zlim(int(-_maxVal) + -set_lim_offset,
+                    int(_maxVal) + set_lim_offset)
+
+        ax.set_xscale('linear')
+        ax.set_yscale('linear')
 
         # set angles/elevations
         ax.view_init(elev=elev, azim=azim)
@@ -902,6 +936,17 @@ class Vizr3D():
     def view3dobs(self, elev=None, azim=None, figSize=(10, 10), obsOption=[True, 0]):
         '''
         Draw a compound in the cartesian coordinate with observer
+
+        Parameters
+        ----------
+        elev : float
+            elevation angle
+        azim : float
+            azimuth angle
+        figSize : tuple
+            figure size
+        obsOption : list
+            [True, 0] --> show observer, 0 --> observer radius
         '''
         # 3d plot
         fig = plt.figure(figsize=figSize)

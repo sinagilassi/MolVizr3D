@@ -14,7 +14,7 @@ from .utility import Utility
 
 class MolParser():
     '''
-    parse different formats of molecule files such as sdf, json, ...
+    Parse different formats of molecule files such as sdf, json, ...
     '''
     _mat = {}
 
@@ -31,12 +31,40 @@ class MolParser():
 
     def read_file(self, sourceContent={}):
         '''
-        read structure file 
+        Read structure file 
             1. from file
             2. download from api
 
-        args:
-            filepath: full file name with directory 
+        Parameters
+        ----------
+        filepath : str
+            full file name with directory 
+
+        Returns
+        -------
+        res : dict
+            mol: mol object
+            structure: structure object
+
+        hints:
+            mol: mol object
+                header_block: header block
+                counts_line: counts line
+                atom_numbers: atom number
+                mat_cid: cid number
+                mat_name: IUPAC name
+                mat_formula: formula
+                mat_mass: molecular mass
+                atom_names: atom list
+                atom_xyz: atom coordinate
+                bond_numbers: bond number
+                bond_list: bond list
+                bond_matrix: bond matrix
+                bond_xyz: bond coordinate
+
+            structure: structure object
+                mol: mol object
+                mat: mat object
         '''
         try:
             # get file path
@@ -68,7 +96,7 @@ class MolParser():
 
     def sdf_parser(self, sdfSource, sdfVersion='V2000'):
         '''
-        parse sdf file
+        Parse sdf file
 
         Parameters
         ----------
@@ -296,8 +324,16 @@ class MolParser():
         '''
         parse json file
 
-        args:
-            jsonSource: dict file 
+        Parameters
+        ----------
+        jsonSource: dict file
+            json file content
+        id_sort: bool
+            if True, sort id
+
+        Returns
+        -------
+        res: dict
         '''
         try:
             dictSource = jsonSource['PC_Compounds'][0]
@@ -454,7 +490,17 @@ class MolParser():
 
     def __json_parser_id(self, data):
         '''
-        return cid 
+        Return cid 
+
+        Parameters
+        ----------
+        data : dict
+            json data
+
+        Returns
+        -------
+        node : int
+            cid
         '''
         # *** id node
         node = data['id']['cid']
@@ -462,7 +508,19 @@ class MolParser():
 
     def __json_parser_atoms(self, data):
         '''
-        return atom id, atom atomic number
+        Return atom id, atom atomic number
+
+        Parameters
+        ----------
+        data : dict
+            json data
+
+        Returns
+        -------
+        _aid : int
+            atom id
+        _elementAtomicNumber : int
+            atom atomic number
         '''
         # aid (atom id)
         _aid = data['aid']
@@ -472,7 +530,21 @@ class MolParser():
 
     def __json_parser_bonds(self, data):
         '''
-        return atom1 id, atom2 is, bond type
+        Return atom1 id, atom2 is, bond type
+
+        Parameters
+        ----------
+        data : dict
+            json data
+
+        Returns
+        -------
+        _aid1 : int
+            atom1 id
+        _aid2 : int
+            atom2 id
+        _order : int
+            bond type
         '''
         # aid1 (atom id)
         _aid1 = data['aid1']
@@ -489,7 +561,23 @@ class MolParser():
 
     def __json_parser_coords(self, data):
         '''
-        return coordination type, coordination id, xyzList
+        Return coordination type, coordination id, xyzList
+
+        Parameters
+        ----------
+        data : dict
+            json data
+
+        Returns
+        -------
+        _coords_type : str
+            coordination type
+        _coords_aid : int
+            coordination id
+        xyzList : np.array
+            xyzList
+        structureType : str
+            2d or 3d
         '''
         data = data[0]
         _coords_type = data['type']  # list
@@ -512,13 +600,36 @@ class MolParser():
         return _coords_type, _coords_aid, xyzList, structureType
 
     def __json_parser_charge(self, data):
+        '''
+        Get charge
+
+        Parameters
+        ----------
+        data : dict
+            json data
+
+        Returns
+        -------
+        node : int
+            charge
+        '''
         # *** id node
         node = data
         return node
 
     def __json_parser_props(self, data):
         '''
-        return a list of all properties
+        Return a list of all properties
+
+        Parameters
+        ----------
+        data : dict
+            json data
+
+        Returns
+        -------
+        res : dict
+            a list of all properties
         '''
         res = {}
         for i in range(len(data)):
@@ -530,7 +641,17 @@ class MolParser():
 
     def __json_parser_count(self, data):
         '''
-        return a list of all count
+        Return a list of all count
+
+        Parameters
+        ----------
+        data : dict
+            json data
+
+        Returns
+        -------
+        res : dict
+            a list of all count
         '''
         res = {}
         for key, value in data.items():
@@ -539,7 +660,29 @@ class MolParser():
 
     def __json_atom_analyzer(self, atomNo, bondNo, elementList, xyzList, bondMatrix):
         '''
-        define xyz list and bond list
+        Define xyz list and bond list
+
+        Parameters
+        ----------
+        atomNo : int
+            atom number
+        bondNo : int
+            bond number
+        elementList : list
+            element list
+        xyzList : np.array
+            xyz list
+        bondMatrix : np.array
+            bond matrix
+
+        Returns
+        -------
+        atomDetails : list
+            atom details
+        objectBaseCoordinate : list
+            object base coordinate
+        bondDetails : list
+            bond details
         '''
         # vars
         # *** detail about atoms
@@ -634,7 +777,21 @@ class MolParser():
 
     def __json_atom_position(self, atomNo, elementList, xyzList):
         '''
-        set mat position into the center of cartesian coordination
+        Set mat position into the center of cartesian coordination
+
+        Parameters
+        ----------
+        atomNo : int
+            atom number
+        elementList : list
+            element list
+        xyzList : np.array
+            xyz list
+
+        Returns
+        -------
+        res : dict
+            a list of all count
         '''
         try:
             # vars
@@ -695,7 +852,23 @@ class MolParser():
 
     def __json_atom_bondblock(self, atomNo, bondNo, elementList, bondMatrix):
         '''
-        build bond block which is used by mat view to display mat structure
+        Build bond block which is used by mat view to display mat structure
+
+        Parameters
+        ----------
+        atomNo : int
+            atom number
+        bondNo : int
+            bond number
+        elementList : list
+            element list
+        bondMatrix : np.array
+            bond matrix
+
+        Returns
+        -------
+        res : dict
+            a list of all count
         '''
         try:
             # element symbols
@@ -760,7 +933,19 @@ class MolParser():
 
     def __find_element_symbol(self, atomic_numbers):
         '''
-        return element symbols
+        Return element symbols
+
+        Parameters
+        ----------
+        atomic_numbers : list
+            atomic numbers
+
+        Returns
+        -------
+        res : dict
+            a list of all count
+        atomList : list
+            atom list
         '''
         el = Element()
         # loop
@@ -774,7 +959,17 @@ class MolParser():
 
     def __var_finder(data):
         '''
-        find variables in a sdf file (single)
+        Find variables in a sdf file (single)
+
+        Parameters
+        ----------
+        data : str
+            sdf data
+
+        Returns
+        -------
+        res : dict
+            a list of all count
         '''
         res = re.findall(
             r"(\>\s*\<(.*)\s*\>\s*((.*\n)([^\<\>\$\$\$\$])*))", data, re.M)
@@ -782,7 +977,17 @@ class MolParser():
 
     def __var_analyzer(data):
         '''
-        make a dict of all properties
+        Make a dict of all properties
+
+        Parameters
+        ----------
+        data : str
+            sdf data
+
+        Returns
+        -------
+        res : dict
+            a list of all count
         '''
         res = {}
         dataSize = len(data)
@@ -810,13 +1015,27 @@ class MolParser():
 
     def SetAtomId(self, xyzList, elementList, bondList):
         '''
-        set atom id with respect to their position in a 3d frame
+        Set atom id with respect to their position in a 3d frame
 
-        args:
-            xyzList: list of element (atom) position
-            elementList: list of elements
-            bondList: list of bond ids and types
-            robs: observer position, default [10,0,0]
+        Parameters
+        ----------
+        xyzList : list
+            list of element (atom) position
+        elementList : list
+            list of elements
+        bondList : list
+            list of bond ids and types
+
+        Returns
+        -------
+        matPosition: list
+            list of new ids
+        xyzListSorted : list
+            list of element (atom) position
+        elementListSorted : list
+            list of elements
+        bondListSorted : list
+            list of bond ids and types
         '''
         try:
             # robs position
@@ -907,11 +1126,19 @@ class MolParser():
 
     def arrange_prop(self, property_value_list, atom_index_list):
         '''
-        arrange a new list with respect to the index list
+        Arrange a new list with respect to the index list
 
-        args:
-            property_value_list: such as atomic number
-            atom_index_list: atom id between 1 and ...
+        Parameters
+        ----------
+        property_value_list: list
+            such as atomic number
+        atom_index_list: list
+            atom id between 1 and ...
+
+        Returns
+        -------
+        res: list
+            sorted list
         '''
         try:
             # convert atom id to list id

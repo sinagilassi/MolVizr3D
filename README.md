@@ -12,6 +12,8 @@ MolVizr3D is a Python package designed to provide an intuitive and powerful solu
 * `Customization:` Customize visual aspects such as colors, styles, and labels to suit your specific needs.
 * `Integration:` Seamlessly integrates with other computational chemistry tools and workflows.
 
+The current version parse only `sdf` files!
+
 ## Installation
 
 Install MolVizr3D with pip
@@ -33,9 +35,11 @@ To check mv3d version:
 ```python
 # check mv3d version
 print(mv3d.__version__)
+
+# this version parse only sdf files
 ```
 
-To visualize the structure of compound using its sdf file:
+To visualize the structure of compound using its `sdf` file:
 
 ```python
 # sdf file

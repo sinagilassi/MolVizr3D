@@ -14,6 +14,8 @@ MolVizr3D is a Python package designed to provide an intuitive and powerful solu
 
 The current version parses only `sdf` files!
 
+![Alt text](https://drive.google.com/uc?export=view&id=1LKrD1K0wjMmBu9yhQW9QZkLWAGtpGTAW).
+
 ## Installation
 
 Install MolVizr3D with pip

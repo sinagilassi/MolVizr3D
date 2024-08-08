@@ -24,7 +24,22 @@ Install MolVizr3D with pip
 
 ## Examples
 
-Import package as:
+In `google colab`, need to install these packages as:
+
+```python
+# step 1:
+!pip install ipympl
+
+# step 2:
+from google.colab import output
+output.enable_custom_widget_manager()
+
+# step 3:
+%matplotlib ipympl
+import matplotlib.pyplot as plt
+```
+
+Import the package as:
 
 ```python
 import molvizr3d as mv3d
@@ -35,8 +50,6 @@ To check mv3d version:
 ```python
 # check mv3d version
 print(mv3d.__version__)
-
-# this version parse only sdf files
 ```
 
 To visualize the structure of compound using its `sdf` file:
@@ -45,7 +58,6 @@ To visualize the structure of compound using its `sdf` file:
 # sdf file
 sdf_file_name_1 = 'test\Conformer3D_COMPOUND_CID_7979.sdf'
 sdf_file = os.path.join(os.getcwd(), sdf_file_name_1)
-
 # visualize compound by sdf file
 mv3d.td(sdf_file)
 ```
@@ -55,7 +67,6 @@ To visualize the structure of compound using its InChI
 ```python
 # InChI
 inchi = 'InChI=1S/C3H8/c1-3-2/h3-4H,1H2,2H3'
-
 # visualize compound by inchi
 mv3d.td_by_inchi()
 ```

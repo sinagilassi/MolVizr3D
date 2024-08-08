@@ -14,7 +14,11 @@ MolVizr3D is a Python package designed to provide an intuitive and powerful solu
 
 The current version parses only `sdf` files!
 
-![Alt text](https://drive.google.com/uc?export=view&id=1LKrD1K0wjMmBu9yhQW9QZkLWAGtpGTAW).
+## Google Colab
+
+You can use the following code to run MolVizr3D in Google Colab:
+
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1Bh8kyyfo6V_GJEI5dzOGAr2B7SgaoffF?usp=sharing)
 
 ## Installation
 

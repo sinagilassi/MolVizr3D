@@ -12,7 +12,7 @@ MolVizr3D is a Python package designed to provide an intuitive and powerful solu
 * `Customization:` Customize visual aspects such as colors, styles, and labels to suit your specific needs.
 * `Integration:` Seamlessly integrates with other computational chemistry tools and workflows.
 
-The current version parse only `sdf` files!
+The current version parses only `sdf` files!
 
 ## Installation
 

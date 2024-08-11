@@ -1,6 +1,7 @@
 # import packages/modules
 import os
 import pubchemquery as pcq
+import pandas as pd
 # internal
 from .config import packageName
 from .config import packageShortName
@@ -92,7 +93,7 @@ def td_by_inchi(inchi, display_legend=True):
         raise Exception("inchi is not valid.")
 
 
-def check_functional_group(file, functional_group='hydroxyl'):
+def check_functional_group(file, functional_groups=[], res_format='dict'):
     '''
     Check a functional group exists in a compound
 
@@ -100,8 +101,10 @@ def check_functional_group(file, functional_group='hydroxyl'):
     ----------
     file : str
         molecule file format (sdf)
-    functional_group : str
-        functional group (default 'hydroxyl')
+    functional_groups : list[str]
+        functional group (default ['hydroxyl'])
+    res_format : str
+        result format (default 'dict')
 
     Returns
     -------
@@ -116,9 +119,13 @@ def check_functional_group(file, functional_group='hydroxyl'):
         # compound
         compound = Compound(compound_info)
         # check functional group
-        res = compound.check_functional_groups(functional_group)
-        # res
-        return res
+        res = compound.check_functional_groups(functional_groups)
+        # check
+        if res_format == 'dict':
+            return res
+        elif res_format == 'dataframe':
+            # dataframe
+            return pd.DataFrame(res)
     else:
         raise Exception("file path is not valid.")
 

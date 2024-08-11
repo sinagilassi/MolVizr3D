@@ -46,14 +46,18 @@ class Compound(Vizr3D, Network):
         __atom_xyz_center = parse_prop['xyz_center_list']
         # limit
         __limits = self._limits
-        # init parent classes
+
+        # TODO: convert atom_bonds to 1d vector
+        __atom_bonds_1d = self.convert_atom_bonds(__atom_bonds)
+
+        # ! init parent classes
         # *** raw info (just for visualizing a structure)
         Vizr3D.__init__(self, __atom_elements, __atom_bonds,
                         __atom_xyz, __atom_xyz_center, self.robs, self.tetaNo, self.phiNo, __limits)
 
         # *** network
         Network.__init__(self, __atom_elements, __atom_bonds,
-                         __atom_xyz, __atom_xyz_center)
+                         __atom_xyz, __atom_xyz_center, __atom_bonds_1d)
 
         # update mat prop
         self.__update_atom_prop('mat_cid')
@@ -252,6 +256,23 @@ class Compound(Vizr3D, Network):
 
     def __update_atom_bond_numbers(self, prop_val):
         self.atom_bond_numbers = prop_val
+
+    def convert_atom_bonds(self, atom_bonds):
+        '''
+        Convert atom bonds to 1d list
+        '''
+        atom_bonds_1d = []
+        for atom in atom_bonds:
+            for bond in atom['bonds']:
+                atom_bonds_1d.append({
+                    'id1': atom['id'],
+                    'symbol1': atom['symbol'],
+                    'id2': bond[0],
+                    'symbol2': bond[1],
+                    'bond_type': bond[3],
+                    'bond_symbol': bond[2]
+                })
+        return atom_bonds_1d
 
     def distance_matrix(self):
         '''

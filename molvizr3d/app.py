@@ -8,6 +8,7 @@ from .config import __version__
 from .config import __description__
 from .docs import MolParser
 from .docs import Compound
+from .docs import Network
 
 
 def main():
@@ -89,6 +90,37 @@ def td_by_inchi(inchi, display_legend=True):
             raise Exception("cid is not found!")
     else:
         raise Exception("inchi is not valid.")
+
+
+def check_functional_group(file, functional_group='hydroxyl'):
+    '''
+    Check a functional group exists in a compound
+
+    Parameters
+    ----------
+    file : str
+        molecule file format (sdf)
+    functional_group : str
+        functional group (default 'hydroxyl')
+
+    Returns
+    -------
+    res : dict
+        a list of all count
+    '''
+    # check file exists
+    if os.path.exists(file):
+        # parse file
+        MolParserC = MolParser(file)
+        compound_info = MolParserC.read_file()
+        # compound
+        compound = Compound(compound_info)
+        # check functional group
+        res = compound.check_functional_groups(functional_group)
+        # res
+        return res
+    else:
+        raise Exception("file path is not valid.")
 
 
 if __name__ == "__main__":

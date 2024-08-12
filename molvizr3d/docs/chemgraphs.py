@@ -263,9 +263,9 @@ class ChemGraphs():
         # bond
         COOC.add_edge(1, 2, symbol='CO', type=2)
         # bond
-        COOC.add_edge(2, 3, symbol='CO', type=1)
+        COOC.add_edge(1, 3, symbol='CO', type=1)
         # bond
-        COOC.add_edge(3, 4, symbol='CO', type=1)
+        COOC.add_edge(3, 4, symbol='OC', type=1)
         # bond
         COOC.add_edge(1, 5, symbol='CC', type=1)
 
@@ -561,64 +561,154 @@ class ChemGraphs():
         # res
         return RX
 
+    def graph_secondary_alkyl_halide(self):
+        '''
+        Create a graph for secondary alkyl halide
+        '''
+        # R-X graph (simplified)
+        RX = nx.Graph()
+        # C
+        RX.add_node(1, symbol='C')
+        # C
+        RX.add_node(2, symbol='C')
+        # C
+        RX.add_node(3, symbol='C')
+        # H
+        RX.add_node(4, symbol='H')
+        # H
+        RX.add_node(5, symbol='H')
+        # X (halogen)
+        RX.add_node(6, symbol='X')
+        # bond
+        RX.add_edge(1, 2, symbol='CC', type=1)
+        # bond
+        RX.add_edge(1, 3, symbol='CC', type=1)
+        # bond
+        RX.add_edge(1, 4, symbol='CH', type=1)
+        # bond
+        RX.add_edge(1, 5, symbol='CH', type=1)
+        # bond
+        RX.add_edge(2, 6, symbol='CX', type=1)
 
-def graph_secondary_alkyl_halide(self):
-    '''
-    Create a graph for secondary alkyl halide
-    '''
-    # R-X graph (simplified)
-    RX = nx.Graph()
-    # C
-    RX.add_node(1, symbol='C')
-    # C
-    RX.add_node(2, symbol='C')
-    # C
-    RX.add_node(3, symbol='C')
-    # H
-    RX.add_node(4, symbol='H')
-    # H
-    RX.add_node(5, symbol='H')
-    # X (halogen)
-    RX.add_node(6, symbol='X')
-    # bond
-    RX.add_edge(1, 2, symbol='CC', type=1)
-    # bond
-    RX.add_edge(1, 3, symbol='CC', type=1)
-    # bond
-    RX.add_edge(1, 4, symbol='CH', type=1)
-    # bond
-    RX.add_edge(1, 5, symbol='CH', type=1)
-    # bond
-    RX.add_edge(2, 6, symbol='CX', type=1)
+        # res
+        return RX
 
-    # res
-    return RX
+    def graph_tertiary_alkyl_halide(self):
+        '''
+        Create a graph for tertiary alkyl halide
+        '''
+        # R-X graph (simplified)
+        RX = nx.Graph()
+        # C
+        RX.add_node(1, symbol='C')
+        # C
+        RX.add_node(2, symbol='C')
+        # C
+        RX.add_node(3, symbol='C')
+        # C
+        RX.add_node(4, symbol='C')
+        # X (halogen)
+        RX.add_node(5, symbol='X')
+        # bond
+        RX.add_edge(1, 2, symbol='CC', type=1)
+        # bond
+        RX.add_edge(1, 3, symbol='CC', type=1)
+        # bond
+        RX.add_edge(1, 4, symbol='CC', type=1)
+        # bond
+        RX.add_edge(1, 5, symbol='CX', type=1)
 
+        # res
+        return RX
 
-def graph_tertiary_alkyl_halide(self):
-    '''
-    Create a graph for tertiary alkyl halide
-    '''
-    # R-X graph (simplified)
-    RX = nx.Graph()
-    # C
-    RX.add_node(1, symbol='C')
-    # C
-    RX.add_node(2, symbol='C')
-    # C
-    RX.add_node(3, symbol='C')
-    # C
-    RX.add_node(4, symbol='C')
-    # X (halogen)
-    RX.add_node(5, symbol='X')
-    # bond
-    RX.add_edge(1, 2, symbol='CC', type=1)
-    # bond
-    RX.add_edge(1, 3, symbol='CC', type=1)
-    # bond
-    RX.add_edge(1, 4, symbol='CC', type=1)
-    # bond
-    RX.add_edge(1, 5, symbol='CX', type=1)
+    def graph_primary_alcohol(self):
+        '''
+        Create a graph for primary alcohol
+        '''
+        # R-OH graph (simplified)
+        ROH = nx.Graph()
+        # C
+        ROH.add_node(1, symbol='C')
+        # H
+        ROH.add_node(2, symbol='H')
+        # H
+        ROH.add_node(3, symbol='H')
+        # O
+        ROH.add_node(4, symbol='O')
+        # H
+        ROH.add_node(5, symbol='H')
+        # bond
+        ROH.add_edge(1, 2, symbol='CH', type=1)
+        # bond
+        ROH.add_edge(1, 3, symbol='CH', type=1)
+        # bond
+        ROH.add_edge(1, 4, symbol='CO', type=1)
+        # bond
+        ROH.add_edge(4, 5, symbol='OH', type=1)
 
-    # res
-    return RX
+        # res
+        return ROH
+
+    def graph_secondary_alcohol(self):
+        '''
+        Create a graph for secondary alcohol
+        '''
+        # R-OH graph (simplified)
+        ROH = nx.Graph()
+        # C
+        ROH.add_node(1, symbol='C')
+        # C
+        ROH.add_node(2, symbol='C')
+        # C
+        ROH.add_node(3, symbol='C')
+        # H
+        ROH.add_node(4, symbol='H')
+        # O
+        ROH.add_node(5, symbol='O')
+        # H
+        ROH.add_node(6, symbol='H')
+        # bond
+        ROH.add_edge(1, 2, symbol='CC', type=1)
+        # bond
+        ROH.add_edge(1, 3, symbol='CC', type=1)
+        # bond
+        ROH.add_edge(1, 4, symbol='CH', type=1)
+        # bond
+        ROH.add_edge(1, 5, symbol='CO', type=1)
+        # bond
+        ROH.add_edge(5, 6, symbol='OH', type=1)
+
+        # res
+        return ROH
+
+    def graph_tertiary_alcohol(self):
+        '''
+        Create a graph for tertiary alcohol
+        '''
+        # R-OH graph (simplified)
+        ROH = nx.Graph()
+        # C
+        ROH.add_node(1, symbol='C')
+        # C
+        ROH.add_node(2, symbol='C')
+        # C
+        ROH.add_node(3, symbol='C')
+        # C
+        ROH.add_node(4, symbol='C')
+        # O
+        ROH.add_node(5, symbol='O')
+        # H
+        ROH.add_node(6, symbol='H')
+        # bond
+        ROH.add_edge(1, 2, symbol='CC', type=1)
+        # bond
+        ROH.add_edge(1, 3, symbol='CC', type=1)
+        # bond
+        ROH.add_edge(1, 4, symbol='CC', type=1)
+        # bond
+        ROH.add_edge(1, 5, symbol='CO', type=1)
+        # bond
+        ROH.add_edge(5, 6, symbol='OH', type=1)
+
+        # res
+        return ROH

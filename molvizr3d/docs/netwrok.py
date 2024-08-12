@@ -30,6 +30,7 @@ class Network(ChemGraphs):
             'carbonyl': [self.graph_carbonyl()],
             'carboxyl': [self.graph_carboxyl()],
             'ether': [self.graph_ether()],
+            'alcohols': [self.graph_primary_alcohol(), self.graph_secondary_alcohol(), self.graph_tertiary_alcohol()],
             'alkane': [self.graph_alkane()],
             'alkene': [self.graph_alkene()],
             'alkyne': [self.graph_alkyne()],

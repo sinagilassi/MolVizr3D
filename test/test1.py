@@ -27,7 +27,11 @@ import pprint
 # Conformer3D_COMPOUND_CID_6228
 # Acetanilide
 # Conformer3D_COMPOUND_CID_904
-sdf_file_name_1 = 'test\Conformer3D_COMPOUND_CID_904.sdf'
+# Ascorbic Acid
+# Conformer3D_COMPOUND_CID_54670067
+# Malathion
+# Conformer3D_COMPOUND_CID_4004
+sdf_file_name_1 = 'test\Conformer3D_COMPOUND_CID_4004.sdf'
 sdf_file = os.path.join(os.getcwd(), sdf_file_name_1)
 
 # visualize compound by sdf file

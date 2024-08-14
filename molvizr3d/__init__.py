@@ -1,4 +1,4 @@
-from .app import main, __version__, td, td_by_inchi, check_functional_group
+from .app import main, __version__, td, td_by_inchi
 
 __all__ = ['main', '__version__', 'td',
-           'td_by_inchi', 'check_functional_group']
+           'td_by_inchi']

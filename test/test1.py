@@ -1,7 +1,5 @@
 # import packages/modules
 import os
-import json
-import numpy as np
 import molvizr3d as mv3d
 import pprint
 
@@ -35,7 +33,7 @@ sdf_file_name_1 = 'test\Conformer3D_COMPOUND_CID_4004.sdf'
 sdf_file = os.path.join(os.getcwd(), sdf_file_name_1)
 
 # visualize compound by sdf file
-# mv3d.td(sdf_file)
+mv3d.td(sdf_file)
 
 # visualize compound by inchi
 # mv3d.td_by_inchi(
@@ -44,7 +42,3 @@ sdf_file = os.path.join(os.getcwd(), sdf_file_name_1)
 # network
 # mv3d.check_functional_group(
 #     'test\Conformer3D_COMPOUND_CID_7979.sdf', functional_groups=['ether'])
-
-
-res = mv3d.check_functional_group(sdf_file, res_format='dataframe')
-print(res)

@@ -23,9 +23,19 @@ setup(
     long_description=long_description,
     packages=find_packages(exclude=['tests', '*.tests', '*.tests.*']),
     license='MIT',
-    install_requires=['pandas', 'pillow', 'requests',
-                      'urllib3', 'matplotlib', 'PubChemQuery', 'numpy'],
-    keywords=['python', 'chemistry', 'chemistry-visualization', 'MolVizr3D'],
+    install_requires=[
+        'pandas',
+        'numpy',
+        'matplotlib',
+        'PubChemQuery',
+        ],
+    keywords=[
+        'chemistry',
+        'chemistry-visualization',
+        'molecular-visualization',
+        '3d-visualization',
+        'MolVizr3D'
+        ],
     classifiers=[
         "Development Status :: 1 - Planning",
         "Intended Audience :: Education",
